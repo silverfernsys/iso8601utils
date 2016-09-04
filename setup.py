@@ -20,7 +20,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=iso8601utils.__version__,
 
-    description='Utilities for parsing iso8601 intervals and periods',
+    description='Utilities for parsing iso8601 intervals and durations',
     long_description=long_description,
 
     # The project's main homepage.
