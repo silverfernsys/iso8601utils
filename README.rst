@@ -6,7 +6,6 @@ A set of utilities for parsing and validating iso8601 `durations
 <https://en.wikipedia.org/wiki/ISO_8601#Time_intervals>`_.
 
 .. code:: python
-
   from iso8601utils import parsers
   parsers.interval('2016-08-01T23:10:59.111Z/2016-08-08T00:13:23.001Z')
   (datetime.datetime(2016, 8, 1, 23, 10, 59, 111), datetime.datetime(2016, 8, 8, 0, 13, 23, 1))
