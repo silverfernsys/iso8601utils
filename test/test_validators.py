@@ -1,5 +1,10 @@
 import unittest
-import mock
+
+try:
+    import mock
+except:
+    from unittest import mock
+
 from datetime import datetime, timedelta
 from iso8601utils.validators import interval, duration
 

@@ -1,4 +1,4 @@
-import regex
+from iso8601utils import regex
 
 
 def interval(interval):

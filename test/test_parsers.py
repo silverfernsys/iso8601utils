@@ -1,5 +1,10 @@
 import unittest
-import mock
+
+try:
+    import mock
+except:
+    from unittest import mock
+
 from datetime import datetime, timedelta
 from iso8601utils.parsers import interval, duration
 
@@ -13,7 +18,7 @@ class TestParsers(unittest.TestCase):
 
         with self.assertRaises(ValueError) as context:
             interval('P6Yasdf')
-        self.assertIn('Malformed ISO 8601 interval', context.exception.message)
+        self.assertEqual('Malformed ISO 8601 interval "P6Yasdf".', str(context.exception))
         self.assertEqual(interval('P7Y'),
                          (now - timedelta(days=365 * 7), None))
         self.assertEqual(interval('P6W'),
@@ -57,7 +62,7 @@ class TestParsers(unittest.TestCase):
             (datetime(year=2016, month=8, day=1, hour=23, minute=10,
                       second=59, microsecond=111),
              datetime(year=2016, month=8, day=8, hour=0, minute=13,
-                      second=23, microsecond=001)))
+                      second=23, microsecond=1)))
 
     def test_duration(self):
         self.assertEqual(duration('P3Y6M4DT12H30M5S'),
