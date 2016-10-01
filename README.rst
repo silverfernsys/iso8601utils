@@ -12,7 +12,7 @@ A set of utilities for parsing and validating iso8601 `durations
   (datetime.datetime(2016, 8, 1, 23, 10, 59, 111), datetime.datetime(2016, 8, 8, 0, 13, 23, 1))
 
   parsers.duration('P3Y6M4DT12H30M5S')
-  datetime.timedelta(1279, 45005)
+  (datetime.timedelta(1099, 45005), MonthDelta(6))
 
   from iso8601utils import validators
   validators.interval('1999-12-31T16:00:00.000Z/P5DT7H')

@@ -1,3 +1,4 @@
+from monthdelta import MonthDelta as monthdelta
 from datetime import datetime, timedelta
 from iso8601utils import regex
 
@@ -14,8 +15,10 @@ def interval(interval):
         e_dt = {k: int(v) for k, v in match.groupdict().items()
                 if v and k.startswith('e_dt_')}
 
+        now = datetime.now()
         if len(s_i.keys()) > 0 and len(s_dt.keys()) == 0:
-            start = datetime.now() - timedelta_from_dict(s_i, 's_i_')
+            (time, month) = deltas_from_dict(s_i, 's_i_')
+            start = now - time - month
         elif len(s_i.keys()) == 0 and len(s_dt.keys()) > 0:
             start = datetime_from_dict(s_dt, 's_dt_')
         else:
@@ -23,7 +26,8 @@ def interval(interval):
                              format(interval))
 
         if len(e_i.keys()) > 0 and len(e_dt.keys()) == 0:
-            end = datetime.now() - timedelta_from_dict(e_i, 'e_i_')
+            (time, month) = deltas_from_dict(e_i, 'e_i_')
+            end = now - time - month
         elif len(e_i.keys()) == 0 and len(e_dt.keys()) > 0:
             end = datetime_from_dict(e_dt, 'e_dt_')
         elif len(e_i.keys()) == 0 and len(e_dt.keys()) == 0:
@@ -39,27 +43,24 @@ def interval(interval):
 
 def duration(duration):
     """ Extracts a string such as P3Y6M4DT12H30M5S to
-    a timedelta object.
-    NOTE: Months are converted into 30 days.
-    NOTE: Years are converted into 365 days.
+    a (timedelta, monthdelta) tuple.
     """
     match = regex.duration.match(duration)
     if match:
         items = match.groupdict().items()
-        return timedelta_from_dict({k: float(v)
-                                    for k, v in items if v})
+        return deltas_from_dict({k: float(v) for k, v in items if v})
     else:
-        return None
+        return (None, None)
 
 
-def timedelta_from_dict(dict, prefix=''):
-    return timedelta(weeks=dict.get(prefix + 'week', 0.0),
+def deltas_from_dict(dict, prefix=''):
+    return (timedelta(weeks=dict.get(prefix + 'week', 0.0),
                      days=dict.get(prefix + 'day', 0.0)
-                     + 30 * dict.get(prefix + 'month', 0.0)
                      + 365 * dict.get(prefix + 'year', 0.0),
                      hours=dict.get(prefix + 'hour', 0.0),
                      minutes=dict.get(prefix + 'minute', 0.0),
-                     seconds=dict.get(prefix + 'second', 0.0))
+                     seconds=dict.get(prefix + 'second', 0.0)),
+            monthdelta(int(dict.get(prefix + 'month', 0.0))))
 
 
 def datetime_from_dict(dict, prefix=''):
