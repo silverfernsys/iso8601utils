@@ -4,6 +4,10 @@ from iso8601utils import regex
 
 
 def interval(interval):
+    """Return a pair of datetimes representing start and end datetimes.
+    :param interval: The ISO 8601 interval.
+    :return: (datetime, datetime)
+    """
     match = regex.interval.match(interval)
     if match:
         s_i = {k: float(v) for k, v in match.groupdict().items()
@@ -42,8 +46,9 @@ def interval(interval):
 
 
 def duration(duration):
-    """ Extracts a string such as P3Y6M4DT12H30M5S to
-    a (timedelta, monthdelta) tuple.
+    """Return a (timedelta, monthdelta) pair representing duration.
+    :param duration: The ISO 8601 duration.
+    :return: (timedelta, monthdelta)
     """
     match = regex.duration.match(duration)
     if match:
