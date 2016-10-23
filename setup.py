@@ -20,7 +20,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version=iso8601utils.__version__,
 
-    description='Utilities for parsing iso8601 intervals and durations',
+    description='Utilities for parsing ISO 8601 times, dates, datetimes, intervals, and durations',
     long_description=long_description,
 
     # The project's main homepage.
@@ -55,7 +55,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='iso8601 date datetime',
+    keywords='iso8601 time date datetime',
 
     packages=find_packages(),
 
