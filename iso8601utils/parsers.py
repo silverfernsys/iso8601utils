@@ -1,3 +1,4 @@
+import calendar
 from collections import namedtuple
 from monthdelta import MonthDelta as monthdelta
 from datetime import datetime as datetime_, timedelta, date as date_, time as time_
@@ -39,13 +40,17 @@ def date(date):
             break
     if match:
         return date_from_dict(match.groupdict())
-    else:
-        match = regex.date_ordinal.match(date)
-        if match:
-            return ordinal_date_from_dict(match.groupdict())
-        else:
-            raise ValueError('Malformed ISO 8601 date "{0}".'.
-                             format(date))
+    
+    match = regex.date_ordinal.match(date)
+    if match:
+        return ordinal_date_from_dict(match.groupdict())
+
+    match = regex.date_week_0.match(date) or regex.date_week_1.match(date)
+    if match:
+        return week_date_from_dict(match.groupdict())
+
+    raise ValueError('Malformed ISO 8601 date "{0}".'.
+                     format(date))
 
 
 def datetime(datetime):
@@ -200,3 +205,26 @@ def ordinal_date_from_dict(dict):
     data = {k: int(v) for k, v in dict.items() if v}
     days = (date_(data.get('year', 1), 1, 1) - date_(1, 1, 1)).days
     return date_.fromordinal(days + data.get('day', 0))
+
+
+def days_in_year(year):
+    if calendar.isleap(int(year)):
+        return 366
+    else:
+        return 365
+
+
+def week_date_from_dict(dict):
+    data = {k: int(v) for k, v in dict.items() if v}
+    year = data.get('year', 1)
+    week = data.get('week', 1)
+    day = data.get('day', 1)
+
+    ordinal = week * 7 + day - ((date_(year, 1, 4).weekday() % 7 + 1) + 3)
+    if ordinal < 1:
+        ordinal = ordinal + days_in_year(year - 1)
+    elif ordinal > days_in_year(year):
+        ordinal = ordinal - days_in_year(year)
+
+    return date_(year, 1, 1) + timedelta(days=(ordinal - 1))
+

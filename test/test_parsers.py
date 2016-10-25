@@ -76,8 +76,19 @@ class TestParsers(unittest.TestCase):
 
 
     def test_date(self):
+        self.assertEqual(date('2008-W39-6'), date_(2008, 9, 27))
+        self.assertEqual(date('2008W396'), date_(2008, 9, 27))
+        self.assertEqual(date('2016W431'), date_(2016, 10, 24))
+        self.assertEqual(date('2016-W43-1'), date_(2016, 10, 24))
         self.assertEqual(date('1981-095'), date_(1981, 04, 05))
+        self.assertEqual(date('1981095'), date_(1981, 04, 05))
         self.assertEqual(date('1981-04-05'), date_(1981, 04, 05))
+        self.assertEqual(date('19810405'), date_(1981, 04, 05))
+        self.assertRaises(ValueError, date, '2008-W396')
+        self.assertRaises(ValueError, date, '2008W39-6')
+        self.assertRaises(ValueError, date, '198195')
+        self.assertRaises(ValueError, date, '1981-0405')
+        self.assertRaises(ValueError, date, '198104-05')
 
 
     def test_datetime(self):

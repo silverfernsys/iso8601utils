@@ -25,6 +25,21 @@ recommendations.
   >>> parsers.duration('P3Y6M4DT12H30M5S')
   Duration(timedelta=datetime.timedelta(4, 45005), monthdelta=MonthDelta(42))
 
+  >>> parsers.time('13:15+05:10')
+  datetime.time(13, 15, tzinfo=<TimezoneInfo(+5:10)>)
+
+  >>> parsers.date('1981-04-05')
+  datetime.date(1981, 4, 5)
+
+  >>> parsers.datetime('2007-08-09T12:30-02:00')
+  datetime.datetime(2007, 8, 9, 12, 30, tzinfo=<TimezoneInfo(-2:0)>)
+
+  >>> parsers.date('1981-095')
+  datetime.date(1981, 4, 5)
+
+  >>> parsers.date('2016-W43-1')
+  datetime.date(2016, 10, 24)
+
   >>> from iso8601utils import validators
   >>> validators.interval('1999-12-31T16:00:00.000+04:00/P5DT7H')
   True
@@ -34,5 +49,15 @@ recommendations.
   True
   >>> validators.duration('23P7DT5H')
   False
+  >>> validators.time('13:15+05:10')
+  True
+  >>> validators.date('1981-04-05')
+  True
+  >>> validators.date('1981-095')
+  True
+  >>> validators.date('1981-W43-1')
+  True
+  >>> validators.date('1981W43-1')
+  False
 
-This project does not currently parse week dates.
+

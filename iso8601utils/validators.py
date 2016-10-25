@@ -6,15 +6,10 @@ def time(time):
     :param time: The ISO 8601 time.
     :return: boolean
     """
-    match = regex.time_form_0.match(time)
+    match = regex.time_form_0.match(time) or regex.time_form_1.match(time)
     if match:
-        return True
-    else:
-        match = regex.time_form_1.match(time)
-        if match:
-            return True
-        else:   
-            raise False
+        return True 
+    return False
 
 
 def date(date):
@@ -22,20 +17,14 @@ def date(date):
     :param date: The ISO 8601 date.
     :return: boolean
     """
-    regexes = [regex.date_form_0, regex.date_form_1, regex.date_form_2]
+    regexes = [regex.date_form_0, regex.date_form_1, regex.date_form_2,
+        regex.date_ordinal, regex.date_week_0, regex.date_week_1]
     match = None
     for r in regexes:
         match = r.match(date)
         if match:
-            break
-    if match:
-        return True
-    else:
-        match = regex.date_ordinal.match(date)
-        if match:
             return True
-        else:
-            return False
+    return False
 
 
 def datetime(datetime):

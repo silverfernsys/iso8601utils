@@ -23,6 +23,14 @@ date_form_2 = re.compile(
     r'^--(?P<month>\d{2})(-?)(?P<day>\d{2})$')
 
 
+date_week_0 = re.compile(
+    r'^(?P<year>\d{4})(W(?P<week>\d{2}))((?P<day>\d{1})?)$')
+
+
+date_week_1 = re.compile(
+    r'^(?P<year>\d{4})(-W(?P<week>\d{2}))((-(?P<day>\d{1}))?)$')
+
+
 date_ordinal = re.compile(
     r'^(?P<year>\d{4})(-?)(?P<day>\d{3})$')
 
