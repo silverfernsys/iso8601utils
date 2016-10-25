@@ -15,12 +15,12 @@ recommendations.
   >>> parsers.interval('2016-08-01T23:10:59.111Z/2016-08-08T00:13:23.001Z')
   Interval(repeat=0, start=datetime.datetime(2016, 8, 1, 23, 10, 59, 111),
   end=datetime.datetime(2016, 8, 8, 0, 13, 23, 1),
-  delta=(datetime.timedelta(6, 3743, 999890), MonthDelta(0)))
+  delta=Duration(timedelta=datetime.timedelta(6, 3743, 999890), monthdelta=MonthDelta(0)))
 
   >>> parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40')
   Interval(repeat=0, start=datetime.datetime(2002, 8, 15, 16, 20, 5, 100, tzinfo=<TimezoneInfo(+8:10)>),
   end=datetime.datetime(2002, 10, 12, 17, 5, 25, 20, tzinfo=<TimezoneInfo(-1:40)>),
-  delta=(datetime.timedelta(-3, 38119, 999920), MonthDelta(2)))
+  delta=Duration(timedelta=datetime.timedelta(-3, 38119, 999920), monthdelta=MonthDelta(2)))
 
   >>> parsers.duration('P3Y6M4DT12H30M5S')
   Duration(timedelta=datetime.timedelta(4, 45005), monthdelta=MonthDelta(42))

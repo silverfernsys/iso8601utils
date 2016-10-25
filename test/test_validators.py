@@ -52,6 +52,8 @@ class TestValidators(unittest.TestCase):
         self.assertTrue(date('1981095'))
         self.assertTrue(date('1981-04-05'))
         self.assertTrue(date('19810405'))
+        self.assertTrue(date('--04-03'))
+        self.assertTrue(date('--1001'))
         self.assertFalse(date('2008-W396'))
         self.assertFalse(date('2008W39-6'))
         self.assertFalse(date('198195'))

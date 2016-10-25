@@ -69,9 +69,10 @@ def datetime(datetime):
 
 
 def interval(interval, now=datetime_.now(), designator='/'):
-    """Return a pair of datetimes representing start and end datetimes.
+    """Return a named tuple representing repeat,
+    start and end datetimes, and duration.
     :param interval: The ISO 8601 interval.
-    :return: Interval(float, datetime, datetime, (timedelta, monthdelta))
+    :return: Interval(float, datetime, datetime, Duration(timedelta, monthdelta))
     """
     try:
         components = interval.split(designator)
@@ -97,7 +98,7 @@ def interval(interval, now=datetime_.now(), designator='/'):
 
 
 def duration(duration):
-    """Return a (timedelta, monthdelta) pair representing duration.
+    """Return a named tuple representing duration.
     :param duration: The ISO 8601 duration.
     :return: Duration(timedelta, monthdelta)
     """

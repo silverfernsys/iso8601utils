@@ -84,6 +84,8 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(date('1981095'), date_(1981, 04, 05))
         self.assertEqual(date('1981-04-05'), date_(1981, 04, 05))
         self.assertEqual(date('19810405'), date_(1981, 04, 05))
+        self.assertEqual(date('--04-03'), date_(1, 04, 03))
+        self.assertEqual(date('--1001'), date_(1, 10, 1))
         self.assertRaises(ValueError, date, '2008-W396')
         self.assertRaises(ValueError, date, '2008W39-6')
         self.assertRaises(ValueError, date, '198195')
