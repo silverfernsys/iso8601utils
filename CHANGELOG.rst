@@ -12,4 +12,4 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 * Initial public release
 
 
-.. _`0.1`: https://github.com/silverfernsys/iso8601utils/commit/ddb06e3c2f14564ea5393b56ada8b96d87435a19
+.. _`0.1`: https://github.com/silverfernsys/iso8601utils/commit/d39a2c8d289562a2f6f71742ff323887d395820f
