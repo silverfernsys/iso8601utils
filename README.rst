@@ -2,6 +2,15 @@
     :target: https://pypi.python.org/pypi/iso8601utils
 .. image:: https://img.shields.io/pypi/l/iso8601utils.svg
     :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/pypi/status/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/pypi/implementation/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/pypi/pyversions/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/pypi/format/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/librariesio/github/silverfernsys/iso8601utils.svg
 
 iso8601utils
 =======================
