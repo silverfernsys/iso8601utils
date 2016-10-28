@@ -35,7 +35,7 @@ setup(
 
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
@@ -72,6 +72,6 @@ setup(
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'test': ['coverage', 'pytest', 'mock'],
+        'test': ['coverage', 'pytest', 'mock', 'monthdelta==1.0b'],
     },
 )
