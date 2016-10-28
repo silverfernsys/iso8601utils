@@ -1,3 +1,8 @@
+.. image:: https://img.shields.io/pypi/v/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+.. image:: https://img.shields.io/pypi/l/iso8601utils.svg
+    :target: https://pypi.python.org/pypi/iso8601utils
+
 iso8601utils
 =======================
 
