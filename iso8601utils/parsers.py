@@ -181,7 +181,7 @@ def time_from_dict(dict):
     data = {k: int(v) for k, v in dict.items() if v and k != 'sign'}
     sign = dict.get('sign')
     if sign:
-        if sign is '+':
+        if sign == '+':
             tz = TimezoneInfo(hours=data.get('offset_hour', 0),
                 minutes=data.get('offset_minute', 0))
         else:
