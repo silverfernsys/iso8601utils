@@ -2,6 +2,8 @@
     :target: https://pypi.python.org/pypi/iso8601utils
 .. image:: https://travis-ci.org/silverfernsys/iso8601utils.svg?branch=master
     :target: https://travis-ci.org/silverfernsys/iso8601utils
+.. image:: https://codecov.io/gh/silverfernsys/iso8601utils/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/silverfernsys/iso8601utils
 .. image:: https://img.shields.io/pypi/l/iso8601utils.svg
     :target: https://pypi.python.org/pypi/iso8601utils
 .. image:: https://img.shields.io/pypi/status/iso8601utils.svg
