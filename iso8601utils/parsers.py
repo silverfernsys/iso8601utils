@@ -127,6 +127,7 @@ def parse_repeat(repeat):
 
 
 def parse_interval(start, end):
+    s = e = delta = None
     # Parse explicit form
     try:
         s = datetime(start)
@@ -221,11 +222,13 @@ def week_date_from_dict(dict):
     week = data.get('week', 1)
     day = data.get('day', 1)
 
-    ordinal = week * 7 + day - ((date_(year, 1, 4).weekday() % 7 + 1) + 3)
+    ordinal = week * 7 + day - ((date_(year, 1, 4).weekday() + 1) + 3)
     if ordinal < 1:
-        ordinal = ordinal + days_in_year(year - 1)
+        ordinal += days_in_year(year - 1)
+        year -= 1
     elif ordinal > days_in_year(year):
-        ordinal = ordinal - days_in_year(year)
+        ordinal -= days_in_year(year)
+        year += 1
 
     return date_(year, 1, 1) + timedelta(days=(ordinal - 1))
 

@@ -20,7 +20,7 @@ class TimezoneInfo(tzinfo):
             sign = '+'
         hours = int(abs(total_seconds) // 3600)
         minutes = int((abs(total_seconds) % 3600) / 60)
-        return '<TimezoneInfo({sign}{hours}:{minutes})>'.format(sign=sign, hours=hours, minutes=minutes)
+        return '<TimezoneInfo({sign}{hours:02d}:{minutes:02d})>'.format(sign=sign, hours=hours, minutes=minutes)
 
     def utcoffset(self, dt):
         return self.offset
