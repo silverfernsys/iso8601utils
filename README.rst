@@ -36,7 +36,7 @@ recommendations.
   delta=Duration(timedelta=datetime.timedelta(6, 3743, 999890), monthdelta=MonthDelta(0)))
 
   >>> parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40')
-  Interval(repeat=0, start=datetime.datetime(2002, 8, 15, 16, 20, 5, 100, tzinfo=<TimezoneInfo(+8:10)>),
+  Interval(repeat=0, start=datetime.datetime(2002, 8, 15, 16, 20, 5, 100, tzinfo=<TimezoneInfo(+08:10)>),
   end=datetime.datetime(2002, 10, 12, 17, 5, 25, 20, tzinfo=<TimezoneInfo(-01:40)>),
   delta=Duration(timedelta=datetime.timedelta(-3, 38119, 999920), monthdelta=MonthDelta(2)))
 
@@ -44,7 +44,7 @@ recommendations.
   Duration(timedelta=datetime.timedelta(4, 45005), monthdelta=MonthDelta(42))
 
   >>> parsers.time('13:15+05:10')
-  datetime.time(13, 15, tzinfo=<TimezoneInfo(+5:10)>)
+  datetime.time(13, 15, tzinfo=<TimezoneInfo(+05:10)>)
 
   >>> parsers.date('1981-04-05')
   datetime.date(1981, 4, 5)
