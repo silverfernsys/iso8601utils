@@ -104,3 +104,7 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(datetime('007-04-15T12:30'))
         self.assertFalse(datetime('2007-08-09T12:30+0'))
         self.assertFalse(datetime('2007-08-09T12:30-02:aa'))
+
+
+if __name__ == '__main__':
+    unittest.main()

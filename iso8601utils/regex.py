@@ -13,19 +13,25 @@ time_form_1 = re.compile(
     r'(Z|((?P<sign>(\+|-))((?P<offset_hour>[0-2][0-9])(:?(?P<offset_minute>[0-5][0-9]))?))?)$')
 
 
+times = [time_form_0, time_form_1]
+
+
 # Parse dates of the form YYYY-MM-DD or YYYY-MM
-date_form_0 = re.compile(
+date_calendar_form_0 = re.compile(
     r'^(?P<year>\d{4})(-(?P<month>\d{2})(-(?P<day>\d{2}))?)?$')
 
 
 # Parse dates of the form YYYYMMDD
-date_form_1 = re.compile(
+date_calendar_form_1 = re.compile(
     r'^(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})$')
 
 
 # Parse dates of the form --MM-DD or --MMDD
-date_form_2 = re.compile(
+date_calendar_form_2 = re.compile(
     r'^--(?P<month>\d{2})(-?)(?P<day>\d{2})$')
+
+
+date_calendars = [date_calendar_form_0, date_calendar_form_1, date_calendar_form_2]
 
 
 # Parse week dates of the form YYYYWww or YYYYWwwD
@@ -36,6 +42,12 @@ date_week_0 = re.compile(
 # Parse week dates of the form YYYY-Www or YYYY-Www-D
 date_week_1 = re.compile(
     r'^(?P<year>\d{4})(-W(?P<week>\d{2}))((-(?P<day>\d{1}))?)$')
+
+
+date_weeks = [date_week_0, date_week_1]
+
+
+dates = date_calendars + date_weeks
 
 
 # Parse ordinal dates of the form YYYY-DDD or YYYYDDD
@@ -53,21 +65,27 @@ duration_form_0 = re.compile(
     r'((?P<second>(\d+(\.\d*)?|\.\d+))S)?)?$')
 
 
-# Parse durations of the form PnW
-duration_form_1 = re.compile(
-    r'^P(?P<week>(\d+(\.\d*)?|\.\d+))W$')
-
-
 # Parse durations of the form PYYYYMMDDThhmmss
-duration_form_2 = re.compile(
+duration_form_1 = re.compile(
     r'^P(?P<year>\d{4})(?P<month>\d{2})(?P<day>\d{2})T'
     r'(?P<hour>\d{2})(?P<minute>\d{2})(?P<second>\d{2})$')
 
 
 # Parse durations of the form P[YYYY]-[MM]-[DD]T[hh]:[mm]:[ss]
-duration_form_3 = re.compile(
+duration_form_2 = re.compile(
     r'^P(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})T'
     r'(?P<hour>\d{2}):(?P<minute>\d{2}):(?P<second>\d{2})$')
+
+
+# Parse durations of the form PnW
+duration_week_form = re.compile(
+    r'^P(?P<week>(\d+(\.\d*)?|\.\d+))W$')
+
+
+duration_standard_forms = [duration_form_0, duration_form_1, duration_form_2]
+
+
+durations = [duration_form_0, duration_form_1, duration_form_2, duration_week_form]
 
 
 # Parse interval repeat component of the form Rn

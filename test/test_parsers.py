@@ -13,15 +13,9 @@ from iso8601utils.tz import TimezoneInfo
 
 class TestParsers(unittest.TestCase):
     def test_time(self):
-        with self.assertRaises(ValueError) as context:
-            time('1234a')
-        self.assertEqual('Malformed ISO 8601 time "1234a".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            time('12:30:40.05+0:15')
-        self.assertEqual('Malformed ISO 8601 time "12:30:40.05+0:15".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            time('1230401.05+10:15')
-        self.assertEqual('Malformed ISO 8601 time "1230401.05+10:15".', str(context.exception))
+        self.assertRaises(ValueError, time, '1234a')
+        self.assertRaises(ValueError, time, '12:30:40.05+0:15')
+        self.assertRaises(ValueError, time, '1230401.05+10:15')
         self.assertEqual(time('12'), time_(hour=12))
         self.assertEqual(time('12+05:10'), time_(hour=12, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(time('12-05:10'), time_(hour=12, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
@@ -74,7 +68,6 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(time('123040.05-08:45'),
             time_(hour=12, minute=30, second=40, microsecond=5, tzinfo=-TimezoneInfo(hours=8, minutes=45)))
 
-
     def test_date(self):
         self.assertEqual(date('2005-01-01'), date('2004-W53-6'))  
         self.assertEqual(date('2005-01-02'), date('2004-W53-7'))
@@ -109,19 +102,16 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, date, '1981-0405')
         self.assertRaises(ValueError, date, '198104-05')
 
-
     def test_datetime(self):
         self.assertEqual(datetime('2007-04-05T14:30'), datetime_(2007, 4, 5, 14, 30))
         self.assertEqual(datetime('2007-08-09T12:30Z'), datetime_(2007, 8, 9, 12, 30))
         self.assertEqual(datetime('2007-08-09T12:30-02:00'),
             datetime_(2007, 8, 9, 12, 30, tzinfo=-TimezoneInfo(hours=2, minutes=0)))
-
+        self.assertRaises(ValueError, datetime, 'invalid')
 
     def test_interval(self):
         now = datetime_(2016, 1, 1)
-        with self.assertRaises(ValueError) as context:
-            interval('P6Yasdf')
-        self.assertEqual('Malformed ISO 8601 interval "P6Yasdf".', str(context.exception))
+        self.assertRaises(ValueError, interval, 'P6Yasdf')
         self.assertRaises(ValueError, interval, '7432891')
         self.assertRaises(ValueError, interval, 'asdf')
         self.assertRaises(ValueError, interval, '23P7DT5H')
@@ -198,18 +188,12 @@ class TestParsers(unittest.TestCase):
             Duration(timedelta(days=4, hours=12, minutes=30, seconds=5), monthdelta(6 + 3 * 12)))
         self.assertEqual(duration('P00200907T114515'),
             Duration(timedelta(days=7, hours=11, minutes=45, seconds=15), monthdelta(9 + 20 * 12)))
-        with self.assertRaises(ValueError) as context:
-            duration('P6Yasdf')
-        self.assertEqual('Malformed ISO 8601 duration "P6Yasdf".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            duration('7432891')
-        self.assertEqual('Malformed ISO 8601 duration "7432891".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            duration('asdf')
-        self.assertEqual('Malformed ISO 8601 duration "asdf".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            duration('23P7DT5H')
-        self.assertEqual('Malformed ISO 8601 duration "23P7DT5H".', str(context.exception))
-        with self.assertRaises(ValueError) as context:
-            duration('')
-        self.assertEqual('Malformed ISO 8601 duration "".', str(context.exception))
+        self.assertRaises(ValueError, duration, 'P6Yasdf')
+        self.assertRaises(ValueError, duration, '7432891')
+        self.assertRaises(ValueError, duration, 'asdf')
+        self.assertRaises(ValueError, duration, '23P7DT5H')
+        self.assertRaises(ValueError, duration, '')
+
+
+if __name__ == '__main__':
+    unittest.main()

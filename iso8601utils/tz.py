@@ -13,14 +13,17 @@ class TimezoneInfo(tzinfo):
         return neg
 
     def __repr__(self):
-        total_seconds = self.offset.total_seconds()
-        if total_seconds < 0:
-            sign = '-'
+        if self.name != self.__class__.__name__:
+            return self.name
         else:
-            sign = '+'
-        hours = int(abs(total_seconds) // 3600)
-        minutes = int((abs(total_seconds) % 3600) / 60)
-        return '<TimezoneInfo({sign}{hours:02d}:{minutes:02d})>'.format(sign=sign, hours=hours, minutes=minutes)
+            total_seconds = self.offset.total_seconds()
+            if total_seconds < 0:
+                sign = '-'
+            else:
+                sign = '+'
+            hours = int(abs(total_seconds) // 3600)
+            minutes = int((abs(total_seconds) % 3600) / 60)
+            return '{0}{1:02d}:{2:02d}'.format(sign, hours, minutes)
 
     def utcoffset(self, dt):
         return self.offset

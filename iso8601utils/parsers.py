@@ -15,16 +15,8 @@ def time(time):
     :param time: The ISO 8601 time.
     :return: time
     """
-    match = regex.time_form_0.match(time)
-    if match:
-        return time_from_dict(match.groupdict())
-    else:
-        match = regex.time_form_1.match(time)
-        if match:
-            return time_from_dict(match.groupdict())
-        else:   
-            raise ValueError('Malformed ISO 8601 time "{0}".'.
-                             format(time))
+    (value, _) = time_24(time)
+    return value
 
 
 def date(date):
@@ -32,25 +24,20 @@ def date(date):
     :param date: The ISO 8601 date.
     :return: date
     """
-    regexes = [regex.date_form_0, regex.date_form_1, regex.date_form_2]
-    match = None
-    for r in regexes:
+    for r in regex.date_calendars:
         match = r.match(date)
         if match:
-            break
-    if match:
-        return date_from_dict(match.groupdict())
+            return date_from_match(match)
     
     match = regex.date_ordinal.match(date)
     if match:
-        return ordinal_date_from_dict(match.groupdict())
+        return ordinal_date_from_match(match)
 
     match = regex.date_week_0.match(date) or regex.date_week_1.match(date)
     if match:
-        return week_date_from_dict(match.groupdict())
+        return week_date_from_match(match)
 
-    raise ValueError('Malformed ISO 8601 date "{0}".'.
-                     format(date))
+    raise ValueError('Invalid ISO 8601 date.')
 
 
 def datetime(datetime):
@@ -60,12 +47,14 @@ def datetime(datetime):
     """
     try:
         components = datetime.split('T')
-        d = date(components[0])
-        t = time(components[1])
+        (t, extra_day) = time_24(components[1])
+        if extra_day:
+            d = date(components[0]) + timedelta(days=extra_day)
+        else:
+            d = date(components[0])
         return datetime_.combine(d, t)
     except:
-        raise ValueError('Malformed ISO 8601 datetime "{0}".'.
-                         format(datetime))
+        raise ValueError('Invalid ISO 8601 datetime.')
 
 
 def interval(interval, now=datetime_.now(), designator='/'):
@@ -93,8 +82,7 @@ def interval(interval, now=datetime_.now(), designator='/'):
             (start, duration) = parse_duration(components[0], end)
         return Interval(repeat, start, end, duration)
     except:
-        raise ValueError('Malformed ISO 8601 interval "{0}".'.
-                         format(interval))
+        raise ValueError('Invalid ISO 8601 interval.')
 
 
 def duration(duration):
@@ -102,19 +90,17 @@ def duration(duration):
     :param duration: The ISO 8601 duration.
     :return: Duration(timedelta, monthdelta)
     """
-    regexes = [regex.duration_form_0, regex.duration_form_1,
-        regex.duration_form_2, regex.duration_form_3]
-    match = None
-    for r in regexes:
+    for r in regex.duration_standard_forms:
         match = r.match(duration)
         if match:
-            break
+            (t, m) = duration_from_match(match)
+            return Duration(t, m)
+
+    match = regex.duration_week_form.match(duration)
     if match:
-        (t, m) = duration_from_dict(match.groupdict())
+        (t, m) = duration_from_week_form_match(match)
         return Duration(t, m)
-    else:
-        raise ValueError('Malformed ISO 8601 duration "{0}".'.
-                         format(duration))
+    raise ValueError('Invalid ISO 8601 duration.')
 
 
 # Helpers
@@ -164,47 +150,73 @@ def parse_duration(duration_, end):
         delta = duration(duration_)
         start = end - delta[0] - delta[1]
         return (start, delta)
-    except Exception as e:
+    except:
         raise ValueError('Parsing failed.')
 
 
-def duration_from_dict(dict):
-    data = {k: float(v) for k, v in dict.items() if v}
-    return (timedelta(weeks=data.get('week', 0.0),
-                     days=data.get('day', 0.0),
-                     hours=data.get('hour', 0.0),
-                     minutes=data.get('minute', 0.0),
-                     seconds=data.get('second', 0.0)),
-            monthdelta(int(data.get('month', 0.0) + 12 * data.get('year', 0.0))))
+def duration_from_match(match):
+    data = {k: float(v or 0.0) for k, v in match.groupdict().items()}
+    return (timedelta(days=data['day'],
+                     hours=data['hour'],
+                     minutes=data['minute'],
+                     seconds=data['second']),
+            monthdelta(int(data['month'] + 12 * data['year'])))
 
 
-def time_from_dict(dict):
-    data = {k: int(v) for k, v in dict.items() if v and k != 'sign'}
-    sign = dict.get('sign')
+def duration_from_week_form_match(match):
+    return (timedelta(weeks=float(match.groupdict().get('week', 0.0))),
+            monthdelta(0))    
+
+
+def time_24(time):
+    """Return a time object representing the ISO 8601 time.
+    :param time: The ISO 8601 time.
+    :return: time
+    """
+    try:
+        for r in regex.times:
+            match = r.match(time)
+            if match:
+                return time_from_match(match)
+    except:
+        pass
+    raise ValueError('Invalid ISO 8601 time.')
+
+
+def time_from_match(match):
+    group = match.groupdict()
+    data = {k: int(v or 0) for k, v in group.items() if k != 'sign'}
+    sign = group.get('sign')
     if sign:
+        hours = data['offset_hour']
+        minutes = data['offset_minute']
+        if hours == minutes == 0:
+            raise ValueError('Invalid timezone offset {0}00:00.'.format(sign))
+
         if sign == '+':
-            tz = TimezoneInfo(hours=data.get('offset_hour', 0),
-                minutes=data.get('offset_minute', 0))
+            tz = TimezoneInfo(hours=hours, minutes=minutes)
         else:
-            tz = -TimezoneInfo(hours=data.get('offset_hour', 0),
-                minutes=data.get('offset_minute', 0))
+            tz = -TimezoneInfo(hours=hours, minutes=minutes)
     else:
         tz = None
 
-    return time_(hour=data.get('hour', 0),
-                 minute=data.get('minute', 0),
-                 second=data.get('second', 0),
-                 microsecond=data.get('microsecond', 0),
-                 tzinfo=tz)
+    hour, minute = data['hour'], data['minute']
+    second, microsecond = data['second'], data['microsecond']
+    day = 0
+    if hour == 24 and minute == second == microsecond == 0:
+        hour = 0
+        day = 1
+
+    return (time_(hour, minute, second, microsecond, tz), day)
 
 
-def date_from_dict(dict):
-    data = {k: int(v) for k, v in dict.items() if v}
+def date_from_match(match):
+    data = {k: int(v) for k, v in match.groupdict().items() if v}
     return date_(data.get('year', 1), data.get('month', 1), data.get('day', 1))
 
 
-def ordinal_date_from_dict(dict):
-    data = {k: int(v) for k, v in dict.items() if v}
+def ordinal_date_from_match(match):
+    data = {k: int(v) for k, v in match.groupdict().items() if v}
     days = (date_(data.get('year', 1), 1, 1) - date_(1, 1, 1)).days
     return date_.fromordinal(days + data.get('day', 0))
 
@@ -216,11 +228,11 @@ def days_in_year(year):
         return 365
 
 
-def week_date_from_dict(dict):
-    data = {k: int(v) for k, v in dict.items() if v}
-    year = data.get('year', 1)
-    week = data.get('week', 1)
-    day = data.get('day', 1)
+def week_date_from_match(match):
+    data = {k: int(v or 1) for k, v in match.groupdict().items()}
+    year = data['year']
+    week = data['week']
+    day = data['day']
 
     ordinal = week * 7 + day - ((date_(year, 1, 4).weekday() + 1) + 3)
     if ordinal < 1:
