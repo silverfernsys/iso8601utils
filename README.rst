@@ -21,11 +21,10 @@ iso8601utils
 
 A set of utilities for parsing and validating ISO 8601 `dates 
 <https://en.wikipedia.org/wiki/ISO_8601#Dates>`_, `times 
-<https://en.wikipedia.org/wiki/ISO_8601#Times>`_, `durations
+<https://en.wikipedia.org/wiki/ISO_8601#Times>`_, `date-times
+<https://en.wikipedia.org/wiki/ISO_8601#Combined_date_and_time_representations>`_, `durations
 <https://en.wikipedia.org/wiki/ISO_8601#Durations>`_, and `intervals
-<https://en.wikipedia.org/wiki/ISO_8601#Time_intervals>`_ that also
-conform to the `rfc3339 <https://tools.ietf.org/html/rfc3339>`_
-recommendations.
+<https://en.wikipedia.org/wiki/ISO_8601#Time_intervals>`_.
 
 .. code:: python
   

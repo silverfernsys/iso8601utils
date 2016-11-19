@@ -65,6 +65,7 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(time('1234a'))
         self.assertFalse(time('12:30:40.05+0:15'))
         self.assertFalse(time('1230401.05+10:15'))
+        self.assertFalse(time('24:00:00.0001'))
         self.assertTrue(time('12'))
         self.assertTrue(time('24:00:00'))
         self.assertTrue(time('00:00:00'))

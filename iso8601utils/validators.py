@@ -1,13 +1,16 @@
 from iso8601utils import regex
-
+from iso8601utils.parsers import time_24
 
 def time(time):
     """Return a time object representing the ISO 8601 time.
     :param time: The ISO 8601 time.
     :return: boolean
     """
-    return (regex.time_form_0.match(time) or
-        regex.time_form_1.match(time)) != None
+    try:
+        time_24(time)
+        return True
+    except:
+        return False
 
 
 def date(date):

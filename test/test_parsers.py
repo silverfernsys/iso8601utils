@@ -16,6 +16,7 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, time, '1234a')
         self.assertRaises(ValueError, time, '12:30:40.05+0:15')
         self.assertRaises(ValueError, time, '1230401.05+10:15')
+        self.assertRaises(ValueError, time, '24:00:00.0001')
         self.assertEqual(time('24:00:00'), time('00:00:00'))
         self.assertEqual(time('12'), time_(hour=12))
         self.assertEqual(time('12+05:10'), time_(hour=12, tzinfo=TimezoneInfo(hours=5, minutes=10)))
