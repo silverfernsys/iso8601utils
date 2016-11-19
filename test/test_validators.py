@@ -66,6 +66,8 @@ class TestValidators(unittest.TestCase):
         self.assertFalse(time('12:30:40.05+0:15'))
         self.assertFalse(time('1230401.05+10:15'))
         self.assertTrue(time('12'))
+        self.assertTrue(time('24:00:00'))
+        self.assertTrue(time('00:00:00'))
         self.assertTrue(time('12+05:10'))
         self.assertTrue(time('12-05:10'))
         self.assertTrue(time('13:15'))
@@ -100,6 +102,8 @@ class TestValidators(unittest.TestCase):
     def test_datetime(self):
         self.assertTrue(datetime('2007-04-05T14:30'))
         self.assertTrue(datetime('2007-08-09T12:30Z'))
+        self.assertTrue(datetime('2007-01-01T24:00:00'))
+        self.assertTrue(datetime('2007-01-02T00:00:00'))
         self.assertTrue(datetime('2007-08-09T12:30-02:00'))
         self.assertFalse(datetime('007-04-15T12:30'))
         self.assertFalse(datetime('2007-08-09T12:30+0'))

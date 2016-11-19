@@ -16,6 +16,7 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, time, '1234a')
         self.assertRaises(ValueError, time, '12:30:40.05+0:15')
         self.assertRaises(ValueError, time, '1230401.05+10:15')
+        self.assertEqual(time('24:00:00'), time('00:00:00'))
         self.assertEqual(time('12'), time_(hour=12))
         self.assertEqual(time('12+05:10'), time_(hour=12, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(time('12-05:10'), time_(hour=12, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
@@ -105,6 +106,8 @@ class TestParsers(unittest.TestCase):
     def test_datetime(self):
         self.assertEqual(datetime('2007-04-05T14:30'), datetime_(2007, 4, 5, 14, 30))
         self.assertEqual(datetime('2007-08-09T12:30Z'), datetime_(2007, 8, 9, 12, 30))
+        self.assertEqual(datetime('2007-01-01T24:00:00'), datetime_(2007, 1, 2, 0, 0, 0))
+        self.assertEqual(datetime('2007-01-01T24:00:00'), datetime('2007-01-02T00:00:00'))
         self.assertEqual(datetime('2007-08-09T12:30-02:00'),
             datetime_(2007, 8, 9, 12, 30, tzinfo=-TimezoneInfo(hours=2, minutes=0)))
         self.assertRaises(ValueError, datetime, 'invalid')
