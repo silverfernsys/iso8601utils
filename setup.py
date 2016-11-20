@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
+from sys import version_info
 
 import iso8601utils
 
@@ -68,11 +69,14 @@ setup(
         'monthdelta==1.0b',
     ],
 
+    if version_info < (3, 4):
+        install_requires.append('enum34')
+
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,
     # for example:
     # $ pip install -e .[dev,test]
     extras_require={
-        'test': ['coverage', 'codecov', 'pytest', 'mock', 'monthdelta==1.0b'],
+        'test': ['coverage', 'codecov', 'pytest', 'mock'],
     },
 )

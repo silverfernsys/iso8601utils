@@ -2,7 +2,7 @@ import calendar
 from collections import namedtuple
 from monthdelta import MonthDelta as monthdelta
 from datetime import datetime as datetime_, timedelta, date as date_, time as time_
-from iso8601utils import regex
+from iso8601utils import regex, interval as interval_, duration as duration_
 from iso8601utils.tz import TimezoneInfo
 
 
@@ -11,18 +11,20 @@ Duration = namedtuple('Duration', ['timedelta', 'monthdelta'])
 
 
 def time(time):
-    """Return a time object representing the ISO 8601 time.
-    :param time: The ISO 8601 time.
-    :return: time
+    """Create a datetime.time object representing the ISO 8601 time.
+    :param time: A string representing an ISO 8601 time.
+    :return: datetime.time
+    :raises: ValueError if time is not a valid ISO 8601 time.
     """
     (value, _) = time_24(time)
     return value
 
 
 def date(date):
-    """Return a date object representing the ISO 8601 date.
-    :param date: The ISO 8601 date.
-    :return: date
+    """Create a datetime.date object representing the ISO 8601 date.
+    :param date: A string representing an ISO 8601 date.
+    :return: datetime.date
+    :raises: ValueError if date is not a valid ISO 8601 date.
     """
     for r in regex.date_calendars:
         match = r.match(date)
@@ -41,17 +43,35 @@ def date(date):
 
 
 def datetime(datetime):
-    """Return a datetime object representing the ISO 8601 datetime.
-    :param datetime: The ISO 8601 datetime.
-    :return: datetime
+    """Create a datetime.datetime object representing the ISO 8601 datetime.
+    :param datetime: A string representing an ISO 8601 datetime.
+    :return: datetime.datetime
+    :raises: ValueError if datetime is not a valid ISO 8601 datetime.
     """
     try:
+        return datetime_helper(datetime)
+    except Exception as e:
+        raise e
+
+
+def datetime_helper(datetime, allow_missing_time=False):
+    try:
         components = datetime.split('T')
-        (t, extra_day) = time_24(components[1])
-        if extra_day:
-            d = date(components[0]) + timedelta(days=extra_day)
+        length = len(components)
+        if length == 2:
+            date_component = components[0]
+            time_component = components[1]
+            (t, extra_day) = time_24(components[1])
+        elif length == 1 and allow_missing_time:
+            date_component = [0]
+            (t, extra_day) = (time(0), 0)
         else:
-            d = date(components[0])
+            raise ValueError('Invalid ISO 8601 datetime.')
+
+        if extra_day:
+            d = date(date_component) + timedelta(days=extra_day)
+        else:
+            d = date(date_component)
         return datetime_.combine(d, t)
     except:
         raise ValueError('Invalid ISO 8601 datetime.')
@@ -60,29 +80,29 @@ def datetime(datetime):
 def interval(interval, now=datetime_.now(), designator='/'):
     """Return a named tuple representing repeat,
     start and end datetimes, and duration.
-    :param interval: The ISO 8601 interval.
+    :param interval: A string representing an ISO 8601 interval.
     :return: Interval(float, datetime, datetime, Duration(timedelta, monthdelta))
+    :raises: ValueError if interval is not a valid ISO 8601 interval.
     """
     try:
         components = interval.split(designator)
-        if len(components) == 3:
-            repeat = parse_repeat(components[0])
-            (start, end, duration) = parse_interval(components[1], components[2])
-        elif len(components) == 2:
-            if components[0][0] == 'R':
-                repeat = parse_repeat(components[0])
-                end = now
-                (start, duration) = parse_duration(components[1], end)
-            else:
-                repeat = 0
-                (start, end, duration) = parse_interval(components[0], components[1])
-        else:
-            repeat = 0
-            end = now
-            (start, duration) = parse_duration(components[0], end)
-        return Interval(repeat, start, end, duration)
-    except:
-        raise ValueError('Invalid ISO 8601 interval.')
+        return parse_interval(components[1], components[2], parse_repeat(components[0]))
+    except Exception as e:
+        print('e1: %s' % e)
+    try:
+        return parse_duration(components[1], now, parse_repeat(components[0]))
+    except Exception as e:
+        print('e2: %s' % e)
+    try:
+        return parse_interval(components[0], components[1], 0)
+    except Exception as e:
+        print('e3: %s' % e)
+    try:
+        return parse_duration(components[0], now, 0)
+    except Exception as e:
+        print('e4: %s' % e)
+
+    raise ValueError('Invalid ISO 8601 interval.')
 
 
 def duration(duration):
@@ -94,12 +114,12 @@ def duration(duration):
         match = r.match(duration)
         if match:
             (t, m) = duration_from_match(match)
-            return Duration(t, m)
+            return duration_(timedelta=t, monthdelta=m)
 
     match = regex.duration_week_form.match(duration)
     if match:
-        (t, m) = duration_from_week_form_match(match)
-        return Duration(t, m)
+        (t, m) = duration_from_week_from_match(match)
+        return duration_(timedelta=t, monthdelta=m)
     raise ValueError('Invalid ISO 8601 duration.')
 
 
@@ -112,46 +132,30 @@ def parse_repeat(repeat):
         raise ValueError('Parsing failed.')
 
 
-def parse_interval(start, end):
-    s = e = delta = None
-    # Parse explicit form
+def parse_interval(start, end, repeats):
     try:
-        s = datetime(start)
-        e = datetime(end)
-        delta = (e.replace(month=s.month, year=s.year) - s,
-            monthdelta((e.month - s.month) + 12 * (e.year - s.year)))
-    except:
-        pass
-
-    # Parse start form
+        return interval_(start=datetime(start), end=datetime(end), repeats=repeats)
+    except Exception as e:
+        print('1E: %s' % e)
+        raise ValueError('Parsing failed1.')
     try:
-        s = datetime(start)
-        delta = duration(end)
-        e = s + delta[0] + delta[1]
-    except:
-        pass
-
-    # Parse end form
+        return interval_(start=datetime(start), duration=duration(end), repeats=repeats)
+    except Exception as e:
+        print('!E: %s' % e)
+        raise ValueError('Parsing failed2.')
     try:
-        delta = duration(start)
-        e = datetime(end)
-        s = e - delta[0] - delta[1]
-    except:
-        pass
-
-    if s and e and delta:
-        return (s, e, delta)
-    else:
-        raise ValueError('Parsing failed.')
+        return interval_(end=datetime(end), duration=duration(start), repeats=repeats)
+    except Exception as e:
+        print('!!E: %s' % e)
+        raise ValueError('Parsing failed3.')
 
 
-def parse_duration(duration_, end):
+def parse_duration(duration_, end, repeats):
     try:
-        delta = duration(duration_)
-        start = end - delta[0] - delta[1]
-        return (start, delta)
-    except:
-        raise ValueError('Parsing failed.')
+        return interval_(end=end, duration=duration(duration_), repeats=repeats)
+    except Exception as e:
+        print('pause_duration: %s' % e)
+        raise ValueError('Parsing failed4.')
 
 
 def duration_from_match(match):
@@ -163,15 +167,16 @@ def duration_from_match(match):
             monthdelta(int(data['month'] + 12 * data['year'])))
 
 
-def duration_from_week_form_match(match):
+def duration_from_week_from_match(match):
     return (timedelta(weeks=float(match.groupdict().get('week', 0.0))),
             monthdelta(0))    
 
 
 def time_24(time):
-    """Return a time object representing the ISO 8601 time.
-    :param time: The ISO 8601 time.
-    :return: time
+    """Return a (datetime.time, int) tuple representing the
+    ISO 8601 time and the day overflow.
+    :param time: A string representing an ISO 8601 time.
+    :return: (datetime.time, int)
     """
     try:
         for r in regex.times:
