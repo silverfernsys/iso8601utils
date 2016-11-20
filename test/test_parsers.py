@@ -138,10 +138,10 @@ class TestParsers(unittest.TestCase):
         #     tzinfo=TimezoneInfo(hours=3, minutes=0)), datetime(2005, 3, 23, 17, tzinfo=TimezoneInfo(hours=3, minutes=0)),
         #     (timedelta(days=2, hours=17), monthdelta(0))))
 
-        # self.assertEqual(parsers.interval('P7Y', now=now), interval(end=now, duration=duration(years=7)))
-        # self.assertEqual(parsers.interval('P6W', now=now), interval(end=now, duration=duration(weeks=6)))
-        # self.assertEqual(parsers.interval('R1/P6Y5M', now=now),
-        #     interval(end=now, repeats=1, duration=duration(years=6, months=5)))
+        self.assertEqual(parsers.interval('P7Y', now=now), interval(end=now, duration=duration(years=7)))
+        self.assertEqual(parsers.interval('P6W', now=now), interval(end=now, duration=duration(weeks=6)))
+        self.assertEqual(parsers.interval('R1/P6Y5M', now=now),
+            interval(end=now, repeats=1, duration=duration(years=6, months=5)))
 
         # self.assertEqual(parsers.interval('R5/1999-12-31T16:00:00.000Z/P5DT7H'),
         #     interval(start=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7), repeats=5))
@@ -158,6 +158,7 @@ class TestParsers(unittest.TestCase):
         #     interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
         #             tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=5))
 
+        # print(parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40'))
         self.assertEqual(parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40'),
             interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
                     tzinfo=TimezoneInfo(hours=8, minutes=10)),
@@ -169,7 +170,6 @@ class TestParsers(unittest.TestCase):
         #         microsecond=100, tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=float('inf')))
 
     def test_duration(self):
-        # print(parsers.duration('P3Y6M4DT12H30M5S'))
         self.assertEqual(parsers.duration('P3Y6M4DT12H30M5S'),
                          duration(timedelta=timedelta(days=4, hours=12, minutes=30, seconds=5),
                             monthdelta=monthdelta(6 + 3 * 12)))

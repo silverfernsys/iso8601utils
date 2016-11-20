@@ -13,8 +13,7 @@ except:
 
 class duration(object):
     Format = Enum('Format', 'DURATION BASIC EXTENDED WEEK')
-    # TODO: Implement comparison operators
-    # https://bitbucket.org/jessaustin/monthdelta/src/d9da1b1a9f82a9886eebd0a7fe3f11331a13d596/monthdelta.py
+
     def __init__(self, *args, **kwargs):
         def resolve_args(args, kwargs):
             keys = ['years', 'months', 'days', 'hours', 'minutes', 'seconds']
@@ -77,39 +76,15 @@ class duration(object):
     def duration_format(self):
         (years, months, days, hours, minutes, seconds, microseconds) = self.components()
 
-        if years:
-            y = '%iY' % years
-        else:
-            y = ''
-        if months:
-            mo = '%iM' % months
-        else:
-            mo = ''
-        if days:
-            d = '%iD' % days
-        else:
-            d = ''
-        if hours:
-            h = '%iH' % hours
-        else:
-            h = ''
-        if minutes:
-            m = '%iM' % minutes
-        else:
-            m = ''
-        if microseconds:
-            s = '%01d' % seconds
-            ms = str(float(microseconds) / 10**6)[2:5].rstrip('0')
-        else:
-            if seconds:
-                s = '%01d' % seconds
-            else:
-                s = '' 
-            ms = ''
-        if seconds or microseconds:
-            secs = '%s.%sS' % (s, ms)
-        else:
-            secs = ''
+        y = '%iY' % years if years else ''
+        mo = '%iM' % months if months else ''
+        d = '%iD' % days if days else ''
+        h = '%iH' % hours if hours else ''
+        m = '%iM' % minutes if minutes else ''
+        s = '%01d' % seconds if seconds else ''
+        ms = str(float(microseconds) / 10**6)[2:5].rstrip('0') if microseconds else ''
+        secs = '%s.%sS' % (s, ms) if (seconds or microseconds) else ''
+
         return 'P%s%s%sT%s%s%s' % (y, mo, d, h, m, secs)
 
     def datetime_format(self, print_format=None):
@@ -121,15 +96,12 @@ class duration(object):
         d = '%02d' % days
         h = '%02d' % hours
         m = '%02d' % minutes
-        if microseconds:
-            s = '%02d.%s' % (seconds, str(float(microseconds) / 10**6)[2:5].rstrip('0'))
-        else:
-            s = '%02d' % seconds
+        s = '%02d.%s' % (seconds, str(float(microseconds) / 10**6)[2:5].rstrip('0')) if microseconds else '%02d' % seconds
 
         if _format == self.Format.BASIC: 
-            return 'P%s%s%sT%s%s%s' % (y, mo, d, h, m, secs)
+            return 'P%s%s%sT%s%s%s' % (y, mo, d, h, m, s)
         else:
-            return 'P%s-%s-%sT%s:%s:%s' % (y, mo, d, h, m, secs)
+            return 'P%s-%s-%sT%s:%s:%s' % (y, mo, d, h, m, s)
 
     def __repr__(self):
         return self.string()
@@ -206,16 +178,17 @@ class duration(object):
 
 class interval(Iterable):
     Format = Enum('Format', 'START_END START_DURATION DURATION_END DURATION')
+    INFINITE = float('inf')
 
     def __init__(self, **kwargs):
         print('kwargs: %s' % kwargs)
-        expected_kwargs = set(('start', 'end', 'duration', 'repeats'))
+        valid_kwargs = set(('start', 'end', 'duration', 'repeats'))
         required_kwargs = set(('start', 'end', 'duration'))
         required_count = 2
 
-        unexpected_kwargs = set(kwargs) - expected_kwargs
-        if unexpected_kwargs:
-            raise ValueError('Unexpected keyword arguments %s.' % ', '.join([k for k in unexpected_kwargs]))
+        invalid_kwargs = set(kwargs) - valid_kwargs
+        if invalid_kwargs:
+            raise ValueError('Unexpected keyword arguments %s.' % ', '.join([k for k in invalid_kwargs]))
         missing_count = required_count - len(kwargs)
         if missing_count > 0:
             missing_kwargs = required_kwargs - set(kwargs)
@@ -234,27 +207,24 @@ class interval(Iterable):
             self.start = self.end - self.duration.timedelta - self.duration.monthdelta
         self.repeats = kwargs.get('repeats', 0)
 
+        if self.repeats != self.INFINITE:
+            self.repeats = int(self.repeats)
+
     def string(self, format=None, component_formats=None):
         format_ = format or self.Format.START_END
         component_formats = component_formats
-        if self.repeats:
-            if self.repeats == float('inf'):
-                r = 'R/'
-            else:
-                r = 'R%d/' % self.repeats
-        else:
-            r = ''      
+        r = 'R/' if self.repeats == self.INFINITE else ('R/%d' % self.repeats if self.repeats else '')     
         if format_ == self.Format.START_END:
-            s = self.start.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
-            e = self.end.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            s = self.start.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
+            e = self.end.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
             return '%s%s/%s' % (r, s, e)
         elif format_ == self.Format.START_DURATION:
-            s = self.start.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+            s = self.start.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
             d = self.duration.string()
             return '%s%s/%s' % (r, s, d)
         elif format_ == self.Format.DURATION_END:
             d = self.duration.string()
-            e = self.end.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+            e = self.end.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
             return '%s%s/%s' % (r, d, e)
         else:
             return self.duration.string()

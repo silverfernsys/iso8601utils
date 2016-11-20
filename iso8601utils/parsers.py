@@ -11,7 +11,8 @@ Duration = namedtuple('Duration', ['timedelta', 'monthdelta'])
 
 
 def time(time):
-    """Create a datetime.time object representing the ISO 8601 time.
+    """Parse a string representing an ISO 8601 time and return
+    a datetime.time object.
     :param time: A string representing an ISO 8601 time.
     :return: datetime.time
     :raises: ValueError if time is not a valid ISO 8601 time.
@@ -21,7 +22,8 @@ def time(time):
 
 
 def date(date):
-    """Create a datetime.date object representing the ISO 8601 date.
+    """Parse a string representing an ISO 8601 date and return
+    a datetime.date object.
     :param date: A string representing an ISO 8601 date.
     :return: datetime.date
     :raises: ValueError if date is not a valid ISO 8601 date.
@@ -43,7 +45,8 @@ def date(date):
 
 
 def datetime(datetime):
-    """Create a datetime.datetime object representing the ISO 8601 datetime.
+    """Parse a string representing an ISO 8601 datetime and return
+    a datetime.datetime object.
     :param datetime: A string representing an ISO 8601 datetime.
     :return: datetime.datetime
     :raises: ValueError if datetime is not a valid ISO 8601 datetime.
@@ -78,10 +81,10 @@ def datetime_helper(datetime, allow_missing_time=False):
 
 
 def interval(interval, now=datetime_.now(), designator='/'):
-    """Return a named tuple representing repeat,
-    start and end datetimes, and duration.
+    """Parse a string representing an ISO 8601 interval and return
+    an iso8601utils.interval object.
     :param interval: A string representing an ISO 8601 interval.
-    :return: Interval(float, datetime, datetime, Duration(timedelta, monthdelta))
+    :return: iso8601utils.interval
     :raises: ValueError if interval is not a valid ISO 8601 interval.
     """
     try:
@@ -106,9 +109,11 @@ def interval(interval, now=datetime_.now(), designator='/'):
 
 
 def duration(duration):
-    """Return a named tuple representing duration.
-    :param duration: The ISO 8601 duration.
-    :return: Duration(timedelta, monthdelta)
+    """Parse a string representing an ISO 8601 duration and return
+    an iso8601utils.duration object.
+    :param duration: A string representing an ISO 8601 duration.
+    :return: iso8601utils.duration
+    :raises: ValueError if duration is not a valid ISO 8601 duration.
     """
     for r in regex.duration_standard_forms:
         match = r.match(duration)

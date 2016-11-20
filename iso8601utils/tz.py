@@ -1,35 +1,46 @@
+from collections import Iterable
 from copy import deepcopy
 from datetime import timedelta, tzinfo
 
 
-class TimezoneInfo(tzinfo):
+class TimezoneInfo(tzinfo, Iterable):
     def __init__(self, hours=0, minutes=0, name=None):
         self.offset = timedelta(hours=hours, minutes=minutes)
-        self.name = name or self.__class__.__name__
+        self.name = name or self.string()
 
     def __neg__(self):
         neg = deepcopy(self)
         neg.offset = -neg.offset
+        neg.name = neg.string()
         return neg
 
+    @property
+    def hours(self):
+        return int(self.offset.total_seconds() // 3600)
+
+    @property
+    def minutes(self):
+        return int((self.offset.total_seconds() % 3600) / 60)
+
+    def string(self):
+        hours, minutes = tuple(self)
+        sign = '-' if (hours < 0 or minutes < 0) else '+'
+        return '%s%02d:%02d' % (sign, abs(hours), abs(minutes))
+
     def __repr__(self):
-        if self.name != self.__class__.__name__:
-            return self.name
-        else:
-            total_seconds = self.offset.total_seconds()
-            if total_seconds < 0:
-                sign = '-'
-            else:
-                sign = '+'
-            hours = int(abs(total_seconds) // 3600)
-            minutes = int((abs(total_seconds) % 3600) / 60)
-            return '{0}{1:02d}:{2:02d}'.format(sign, hours, minutes)
+        return self.name
+
+    def __iter__(self):
+        total_seconds = self.offset.total_seconds()
+        sign = -1 if total_seconds < 0 else 1
+        yield sign * int(abs(total_seconds) // 3600)
+        yield sign * int((abs(total_seconds) % 3600) / 60)
 
     def utcoffset(self, dt):
         return self.offset
 
-    def dst(self):
+    def dst(self, dt):
         return timedelta(0)
 
-    def tzname(self):
+    def tzname(self, dt):
         return self.name
