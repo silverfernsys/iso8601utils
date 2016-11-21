@@ -7,7 +7,7 @@ except:
 
 from monthdelta import MonthDelta as monthdelta
 from datetime import datetime as datetime_, timedelta, time as time_, date as date_
-from iso8601utils import parsers, duration, interval
+from iso8601utils import parsers, interval, duration
 from iso8601utils.tz import TimezoneInfo
 
 
@@ -122,10 +122,10 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, parsers.interval, '1999-12-31T16:00:00.000Z')
         self.assertRaises(ValueError, parsers.interval, '1999-12-31T16:00:00.000+08:30')
         self.assertRaises(ValueError, parsers.interval, 'P6Yasdf/P8Y')
-        # self.assertRaises(ValueError, parsers.interval, 'P7Y/asdf')
+        self.assertRaises(ValueError, parsers.interval, 'P7Y/asdf')
         self.assertRaises(ValueError, parsers.interval, '1999-12-01T00:00:0a/1999-12-31T16:00:00.000Z')
         self.assertRaises(ValueError, parsers.interval, 'A4/1999-12-01T00:00:00/1999-12-31T16:00:00.000Z')
-        # self.assertRaises(ValueError, parsers.interval, 'P6Y5M/P9D')
+        self.assertRaises(ValueError, parsers.interval, 'P6Y5M/P9D')
         self.assertRaises(ValueError, parsers.interval, '7432891/1234')
         self.assertRaises(ValueError, parsers.interval, 'asdf/87rf')
         self.assertRaises(ValueError, parsers.interval, '23P7DT5H/89R3')
@@ -142,32 +142,25 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(parsers.interval('P6W', now=now), interval(end=now, duration=duration(weeks=6)))
         self.assertEqual(parsers.interval('R1/P6Y5M', now=now),
             interval(end=now, repeats=1, duration=duration(years=6, months=5)))
-
-        # self.assertEqual(parsers.interval('R5/1999-12-31T16:00:00.000Z/P5DT7H'),
-        #     interval(start=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7), repeats=5))
-
+        self.assertEqual(parsers.interval('R5/1999-12-31T16:00:00.000Z/P5DT7H'),
+            interval(start=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7), repeats=5))
         self.assertEqual(parsers.interval('R7/2016-08-01T23:10:59.111Z/2016-08-08T00:13:23.001Z'),
             interval(start=datetime_(year=2016, month=8, day=1, hour=23, minute=10, second=59, microsecond=111),
                 end=datetime_(year=2016, month=8, day=8, hour=0, minute=13, second=23, microsecond=1), repeats=7))
-
-        # self.assertEqual(parsers.interval('R2/P5DT7H/1999-12-31T16:00:00.000Z'),
-        #     interval(end=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7),
-        #         repeats=2))
-
-        # self.assertEqual(parsers.interval('R5/2002-08-15T16:20:05.100+08:10/P5DT7H'),
-        #     interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
-        #             tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=5))
-
-        # print(parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40'))
+        self.assertEqual(parsers.interval('R2/P5DT7H/1999-12-31T16:00:00.000Z'),
+            interval(end=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7),
+                repeats=2))
+        self.assertEqual(parsers.interval('R5/2002-08-15T16:20:05.100+08:10/P5DT7H'),
+            interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
+                    tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=5))
         self.assertEqual(parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40'),
             interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
                     tzinfo=TimezoneInfo(hours=8, minutes=10)),
                 end=datetime_(year=2002, month=10, day=12, hour=17, minute=5, second=25, microsecond=20,
                     tzinfo=-TimezoneInfo(hours=1, minutes=40))))
-
-        # self.assertEqual(parsers.interval('R/P5DT7H/2002-08-15T16:20:05.100+08:10'),
-        #     interval(end=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5,
-        #         microsecond=100, tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=float('inf')))
+        self.assertEqual(parsers.interval('R/P5DT7H/2002-08-15T16:20:05.100+08:10'),
+            interval(end=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5,
+                microsecond=100, tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=float('inf')))
 
     def test_duration(self):
         self.assertEqual(parsers.duration('P3Y6M4DT12H30M5S'),

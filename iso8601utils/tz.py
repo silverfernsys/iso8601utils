@@ -9,18 +9,21 @@ class TimezoneInfo(tzinfo, Iterable):
         self.name = name or self.string()
 
     def __neg__(self):
-        neg = deepcopy(self)
-        neg.offset = -neg.offset
-        neg.name = neg.string()
-        return neg
+        (hours, minutes) = tuple(self)
+        name = self.name if self.name != self.string() else None
+        return TimezoneInfo(-hours, -minutes, name)
 
     @property
     def hours(self):
-        return int(self.offset.total_seconds() // 3600)
+        total_seconds = self.offset.total_seconds()
+        sign = -1 if total_seconds < 0 else 1
+        return sign * int(abs(total_seconds) // 3600)
 
     @property
     def minutes(self):
-        return int((self.offset.total_seconds() % 3600) / 60)
+        total_seconds = self.offset.total_seconds()
+        sign = -1 if total_seconds < 0 else 1
+        return sign * int((abs(total_seconds) % 3600) / 60)
 
     def string(self):
         hours, minutes = tuple(self)
@@ -29,6 +32,9 @@ class TimezoneInfo(tzinfo, Iterable):
 
     def __repr__(self):
         return self.name
+
+    def __str__(self):
+        return self.__repr__()
 
     def __iter__(self):
         total_seconds = self.offset.total_seconds()
