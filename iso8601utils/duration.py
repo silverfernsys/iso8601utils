@@ -1,3 +1,4 @@
+from collections import Iterable
 from datetime import datetime, timedelta
 from enum import Enum
 from monthdelta import MonthDelta as monthdelta
@@ -8,7 +9,7 @@ except:
     pass
 
 
-class duration(object):
+class duration(Iterable):
     Format = Enum('Format', 'DURATION BASIC EXTENDED WEEK')
 
     def __init__(self, *args, **kwargs):
@@ -68,21 +69,22 @@ class duration(object):
         return (self.monthdelta.months / 12, self.monthdelta.months % 12,
             self.timedelta.days, self.timedelta.seconds // 3600,
             self.timedelta.seconds // 60 % 60, self.timedelta.seconds % 60,
-            self.timedelta.microseconds)
+            self.timedelta.total_seconds())
 
     def duration_format(self):
-        (years, months, days, hours, minutes, seconds, microseconds) = self.components()
+        (years, months, days, hours, minutes, seconds, total_seconds) = self.components()
 
         y = '%iY' % years if years else ''
         mo = '%iM' % months if months else ''
         d = '%iD' % days if days else ''
         h = '%iH' % hours if hours else ''
         m = '%iM' % minutes if minutes else ''
+        ms = str(total_seconds).split('.')[1].rstrip('0')
         s = '%01d' % seconds if seconds else ''
-        ms = str(float(microseconds) / 10**6)[2:5].rstrip('0') if microseconds else ''
-        secs = '%s.%sS' % (s, ms) if (seconds or microseconds) else ''
+        div = '.' if ms else ''
+        secs = 'S' if s or ms else ''
 
-        return 'P%s%s%sT%s%s%s' % (y, mo, d, h, m, secs)
+        return 'P%s%s%sT%s%s%s%s%s%s' % (y, mo, d, h, m, s, div, ms, secs)
 
     def datetime_format(self, print_format=None):
         _format = print_format or self.print_format
@@ -100,19 +102,31 @@ class duration(object):
         else:
             return 'P%s-%s-%sT%s:%s:%s' % (y, mo, d, h, m, s)
 
+    def __iter__(self):
+        yield self.timedelta
+        yield self.monthdelta
+
     def __repr__(self):
-        return self.string()
+        return 'iso8601utils.duration(%s)' % self.string()
 
     def __str__(self):
         return self.__repr__()
 
     def __add__(self, other):
-        return duration(timedelta=(self.timedelta + other.timedelta),
-            monthdelta=(self.monthdelta + other.monthdelta))
+        if isinstance(other, duration):
+            return duration(timedelta=(self.timedelta + other.timedelta),
+                monthdelta=(self.monthdelta + other.monthdelta))
+        if isinstance(other, datetime):
+            return other + self.timedelta + self.monthdelta
+        return NotImplemented
 
     def __sub__(self, other):
-        return duration(timedelta=(self.timedelta - other.timedelta),
-            monthdelta=(self.monthdelta - other.monthdelta))
+        if isinstance(other, duration):
+            return duration(timedelta=(self.timedelta - other.timedelta),
+                monthdelta=(self.monthdelta - other.monthdelta))
+        if isinstance(other, datetime):
+            return other - self.timedelta - self.monthdelta
+        return NotImplemented
 
     def __mul__(self, other):
         return duration(timedelta=(other * self.timedelta),
@@ -130,7 +144,7 @@ class duration(object):
         return self.__add__(other)
 
     def __rsub__(self, other):
-        return other.__sub__(self)
+        return self.__sub__(other)
 
     def __rmul__(self, other):
         return self.__mul__(other)

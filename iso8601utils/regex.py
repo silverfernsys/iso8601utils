@@ -3,13 +3,13 @@ import re
 
 # Parse times of the hh:mm:ss.sss, hh:mm:ss, hh:mm, or hh
 time_form_0 = re.compile(
-    r'^(?P<hour>[0-2][0-9])(:(?P<minute>[0-5][0-9])(:(?P<second>[0-5][0-9])(\.(?P<microsecond>\d+))?)?)?'
+    r'^(?P<hour>[0-2][0-9])(:(?P<minute>[0-5][0-9])(:(?P<second>[0-5][0-9])(\.(?P<millisecond>\d+))?)?)?'
     r'(Z|((?P<sign>(\+|-))((?P<offset_hour>[0-2][0-9])(:?(?P<offset_minute>[0-5][0-9]))?))?)$')
 
 
 # Parse times of the form hhmmss.sss, hhmmss, hhmm, or hh
 time_form_1 = re.compile(
-    r'^(?P<hour>[0-2][0-9])((?P<minute>[0-5][0-9])((?P<second>[0-5][0-9])(\.(?P<microsecond>\d+))?)?)?'
+    r'^(?P<hour>[0-2][0-9])((?P<minute>[0-5][0-9])((?P<second>[0-5][0-9])(\.(?P<millisecond>\d+))?)?)?'
     r'(Z|((?P<sign>(\+|-))((?P<offset_hour>[0-2][0-9])(:?(?P<offset_minute>[0-5][0-9]))?))?)$')
 
 

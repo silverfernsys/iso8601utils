@@ -50,3 +50,6 @@ class TimezoneInfo(tzinfo, Iterable):
 
     def tzname(self, dt):
         return self.name
+
+
+utc = TimezoneInfo(hours=0, minutes=0, name='Z')

@@ -1,7 +1,7 @@
 from calendar import isleap
 from datetime import timedelta, date as date_, time as time_
 from monthdelta import MonthDelta as monthdelta
-from iso8601utils.tz import TimezoneInfo
+from iso8601utils.tz import TimezoneInfo, utc
 
 
 def duration_from_match(match):
@@ -33,16 +33,16 @@ def time_from_match(match):
         else:
             tz = -TimezoneInfo(hours=hours, minutes=minutes)
     else:
-        tz = None
+        tz = utc
 
     hour, minute = data['hour'], data['minute']
-    second, microsecond = data['second'], data['microsecond']
+    second, millisecond = data['second'], data['millisecond']
     day = 0
-    if hour == 24 and minute == second == microsecond == 0:
+    if hour == 24 and minute == second == millisecond == 0:
         hour = 0
         day = 1
 
-    return (time_(hour, minute, second, microsecond, tz), day)
+    return (time_(hour, minute, second, 1000 * millisecond, tz), day)
 
 
 def date_from_match(match):

@@ -8,7 +8,7 @@ except:
 from monthdelta import MonthDelta as monthdelta
 from datetime import datetime as datetime_, timedelta, time as time_, date as date_
 from iso8601utils import parsers, interval, duration
-from iso8601utils.tz import TimezoneInfo
+from iso8601utils.tz import TimezoneInfo, utc
 
 
 class TestParsers(unittest.TestCase):
@@ -18,15 +18,15 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, parsers.time, '1230401.05+10:15')
         self.assertRaises(ValueError, parsers.time, '24:00:00.0001')
         self.assertEqual(parsers.time('24:00:00'), parsers.time('00:00:00'))
-        self.assertEqual(parsers.time('12'), time_(hour=12))
+        self.assertEqual(parsers.time('12'), time_(hour=12, tzinfo=utc))
         self.assertEqual(parsers.time('12+05:10'), time_(hour=12, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('12-05:10'), time_(hour=12, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
-        self.assertEqual(parsers.time('13:15'), time_(hour=13, minute=15))
+        self.assertEqual(parsers.time('13:15'), time_(hour=13, minute=15, tzinfo=utc))
         self.assertEqual(parsers.time('13:15+05:10'),
             time_(hour=13, minute=15, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('13:15-05:10'),
             time_(hour=13, minute=15, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
-        self.assertEqual(parsers.time('14:20:50'), time_(hour=14, minute=20, second=50))
+        self.assertEqual(parsers.time('14:20:50'), time_(hour=14, minute=20, second=50, tzinfo=utc))
         self.assertEqual(parsers.time('14:20:50+05:10'),
             time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('14:20:50-05:10'),
@@ -39,18 +39,18 @@ class TestParsers(unittest.TestCase):
             time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('14:20:50-0510'),
             time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
-        self.assertEqual(parsers.time('12:30:40.05'), time_(hour=12, minute=30, second=40, microsecond=5))
-        self.assertEqual(parsers.time('12:30:40.05Z'), time_(hour=12, minute=30, second=40, microsecond=5))
+        self.assertEqual(parsers.time('12:30:40.05'), time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc))
+        self.assertEqual(parsers.time('12:30:40.05Z'), time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc))
         self.assertEqual(parsers.time('12:30:40.05+10:15'),
-            time_(hour=12, minute=30, second=40, microsecond=5, tzinfo=TimezoneInfo(hours=10, minutes=15)))
+            time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=TimezoneInfo(hours=10, minutes=15)))
         self.assertEqual(parsers.time('12:30:40.05-08:45'),
-            time_(hour=12, minute=30, second=40, microsecond=5, tzinfo=-TimezoneInfo(hours=8, minutes=45)))
-        self.assertEqual(parsers.time('1315'), time_(hour=13, minute=15))
+            time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-TimezoneInfo(hours=8, minutes=45)))
+        self.assertEqual(parsers.time('1315'), time_(hour=13, minute=15, tzinfo=utc))
         self.assertEqual(parsers.time('1315+05:10'),
             time_(hour=13, minute=15, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('1315-05:10'),
             time_(hour=13, minute=15, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
-        self.assertEqual(parsers.time('142050'), time_(hour=14, minute=20, second=50))
+        self.assertEqual(parsers.time('142050'), time_(hour=14, minute=20, second=50, tzinfo=utc))
         self.assertEqual(parsers.time('142050+05:10'),
             time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('142050-05:10'),
@@ -63,12 +63,12 @@ class TestParsers(unittest.TestCase):
             time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10)))
         self.assertEqual(parsers.time('142050-0510'),
             time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10)))
-        self.assertEqual(parsers.time('123040.05'), time_(hour=12, minute=30, second=40, microsecond=5))
-        self.assertEqual(parsers.time('123040.05Z'), time_(hour=12, minute=30, second=40, microsecond=5))
+        self.assertEqual(parsers.time('123040.05'), time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc))
+        self.assertEqual(parsers.time('123040.05Z'), time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc))
         self.assertEqual(parsers.time('123040.05+10:15'),
-            time_(hour=12, minute=30, second=40, microsecond=5, tzinfo=TimezoneInfo(hours=10, minutes=15)))
+            time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=TimezoneInfo(hours=10, minutes=15)))
         self.assertEqual(parsers.time('123040.05-08:45'),
-            time_(hour=12, minute=30, second=40, microsecond=5, tzinfo=-TimezoneInfo(hours=8, minutes=45)))
+            time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-TimezoneInfo(hours=8, minutes=45)))
 
     def test_date(self):
         self.assertEqual(parsers.date('2005-01-01'), parsers.date('2004-W53-6'))  
@@ -105,9 +105,9 @@ class TestParsers(unittest.TestCase):
         self.assertRaises(ValueError, parsers.date, '198104-05')
 
     def test_datetime(self):
-        self.assertEqual(parsers.datetime('2007-04-05T14:30'), datetime_(2007, 4, 5, 14, 30))
-        self.assertEqual(parsers.datetime('2007-08-09T12:30Z'), datetime_(2007, 8, 9, 12, 30))
-        self.assertEqual(parsers.datetime('2007-01-01T24:00:00'), datetime_(2007, 1, 2, 0, 0, 0))
+        self.assertEqual(parsers.datetime('2007-04-05T14:30'), datetime_(2007, 4, 5, 14, 30, tzinfo=utc))
+        self.assertEqual(parsers.datetime('2007-08-09T12:30Z'), datetime_(2007, 8, 9, 12, 30, tzinfo=utc))
+        self.assertEqual(parsers.datetime('2007-01-01T24:00:00'), datetime_(2007, 1, 2, 0, 0, 0, tzinfo=utc))
         self.assertEqual(parsers.datetime('2007-01-01T24:00:00'), parsers.datetime('2007-01-02T00:00:00'))
         self.assertEqual(parsers.datetime('2007-08-09T12:30-02:00'),
             datetime_(2007, 8, 9, 12, 30, tzinfo=-TimezoneInfo(hours=2, minutes=0)))
@@ -143,24 +143,24 @@ class TestParsers(unittest.TestCase):
         self.assertEqual(parsers.interval('R1/P6Y5M', now=now),
             interval(end=now, repeats=1, duration=duration(years=6, months=5)))
         self.assertEqual(parsers.interval('R5/1999-12-31T16:00:00.000Z/P5DT7H'),
-            interval(start=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7), repeats=5))
+            interval(start=datetime_(year=1999, month=12, day=31, hour=16, tzinfo=utc), duration=duration(days=5, hours=7), repeats=5))
         self.assertEqual(parsers.interval('R7/2016-08-01T23:10:59.111Z/2016-08-08T00:13:23.001Z'),
-            interval(start=datetime_(year=2016, month=8, day=1, hour=23, minute=10, second=59, microsecond=111),
-                end=datetime_(year=2016, month=8, day=8, hour=0, minute=13, second=23, microsecond=1), repeats=7))
+            interval(start=datetime_(year=2016, month=8, day=1, hour=23, minute=10, second=59, microsecond=111000, tzinfo=utc),
+                end=datetime_(year=2016, month=8, day=8, hour=0, minute=13, second=23, microsecond=1000, tzinfo=utc), repeats=7))
         self.assertEqual(parsers.interval('R2/P5DT7H/1999-12-31T16:00:00.000Z'),
-            interval(end=datetime_(year=1999, month=12, day=31, hour=16), duration=duration(days=5, hours=7),
+            interval(end=datetime_(year=1999, month=12, day=31, hour=16, tzinfo=utc), duration=duration(days=5, hours=7),
                 repeats=2))
         self.assertEqual(parsers.interval('R5/2002-08-15T16:20:05.100+08:10/P5DT7H'),
-            interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
+            interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100000,
                     tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=5))
         self.assertEqual(parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40'),
-            interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100,
+            interval(start=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5, microsecond=100000,
                     tzinfo=TimezoneInfo(hours=8, minutes=10)),
-                end=datetime_(year=2002, month=10, day=12, hour=17, minute=5, second=25, microsecond=20,
+                end=datetime_(year=2002, month=10, day=12, hour=17, minute=5, second=25, microsecond=20000,
                     tzinfo=-TimezoneInfo(hours=1, minutes=40))))
         self.assertEqual(parsers.interval('R/P5DT7H/2002-08-15T16:20:05.100+08:10'),
             interval(end=datetime_(year=2002, month=8, day=15, hour=16, minute=20, second=5,
-                microsecond=100, tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=float('inf')))
+                microsecond=100000, tzinfo=TimezoneInfo(hours=8, minutes=10)), duration=duration(days=5, hours=7), repeats=float('inf')))
 
     def test_duration(self):
         self.assertEqual(parsers.duration('P3Y6M4DT12H30M5S'),

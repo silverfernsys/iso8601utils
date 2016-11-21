@@ -39,7 +39,7 @@ class interval(Iterable):
     def string(self, format=None, component_formats=None):
         format_ = format or self.Format.START_END
         component_formats = component_formats
-        r = 'R/' if self.repeats == self.INFINITE else ('R/%d' % self.repeats if self.repeats else '')     
+        r = 'R/' if self.repeats == self.INFINITE else ('R%d/' % self.repeats if self.repeats else '')     
         if format_ == self.Format.START_END:
             s = self.start.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
             e = self.end.strftime('%Y-%m-%dT%H:%M:%S.%f%Z')
@@ -56,7 +56,10 @@ class interval(Iterable):
             return self.duration.string()
 
     def __iter__(self):
-        return self
+        yield self.repeats
+        yield self.start
+        yield self.end
+        yield self.duration
 
     def __repr__(self):
         return 'iso8601utils.interval(%s)' % self.string()
