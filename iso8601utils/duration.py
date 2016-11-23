@@ -23,7 +23,7 @@ class duration(Iterable):
 
         def create_deltas(years=0, months=0, days=0, hours=0, minutes=0, seconds=0):
             td = timedelta(days=days, hours=hours, minutes=minutes, seconds=seconds)
-            md = monthdelta(months + 12 * years)
+            md = monthdelta(int(months + 12 * years))
             return (td, md)
 
         def create_week_delta(weeks):
@@ -144,15 +144,15 @@ class duration(Iterable):
         return self.__add__(other)
 
     def __rsub__(self, other):
-        return self.__sub__(other)
+        return -self.__sub__(other)
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
-    def __neg__(self, other):
+    def __neg__(self):
         return duration(timedelta=-self.timedelta, monthdelta=-self.monthdelta)
 
-    def __pos__(self, other):
+    def __pos__(self):
         return duration(timedelta=self.timedelta, monthdelta=self.monthdelta)
 
     def __abs__(self):
@@ -162,26 +162,44 @@ class duration(Iterable):
         return bool(self.timedelta) and bool(self.monthdelta)
 
     def __eq__(self, other):
-        return (self.timedelta == other.timedelta) and (self.monthdelta == other.monthdelta)
+        if isinstance(other, duration):
+            return (self.timedelta == other.timedelta) and (self.monthdelta == other.monthdelta)
+        else:
+            return False
 
     def __ne__(self, other):
-        return (self.timedelta != other.timedelta) or (self.monthdelta != other.monthdelta)
+        if isinstance(other, duration):
+            return (self.timedelta != other.timedelta) or (self.monthdelta != other.monthdelta)
+        else:
+            return False
 
     def __ge__(self, other):
-        now = datetime.now()
-        return now + self.timedelta + self.monthdelta >= now + other.timedelta + other.monthdelta
+        if isinstance(other, duration):
+            now = datetime.now()
+            return now + self.timedelta + self.monthdelta >= now + other.timedelta + other.monthdelta
+        else:
+            return False
 
     def __gt__(self, other):
-        now = datetime.now()
-        return now + self.timedelta + self.monthdelta > now + other.timedelta + other.monthdelta
+        if isinstance(other, duration):
+            now = datetime.now()
+            return now + self.timedelta + self.monthdelta > now + other.timedelta + other.monthdelta
+        else:
+            return False
 
     def __le__(self, other):
-        now = datetime.now()
-        return now + self.timedelta + self.monthdelta <= now + other.timedelta + other.monthdelta
+        if isinstance(other, duration):
+            now = datetime.now()
+            return now + self.timedelta + self.monthdelta <= now + other.timedelta + other.monthdelta
+        else:
+            return False
 
     def __lt__(self, other):
-        now = datetime.now()
-        return now + self.timedelta + self.monthdelta < now + other.timedelta + other.monthdelta
+        if isinstance(other, duration):
+            now = datetime.now()
+            return now + self.timedelta + self.monthdelta < now + other.timedelta + other.monthdelta
+        else:
+            return False
 
     def __hash__(self):
         return hash((self.timedelta, self.monthdelta))

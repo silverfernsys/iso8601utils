@@ -1,5 +1,13 @@
-from iso8601utils import regex
-from iso8601utils.parsers import time_24
+from iso8601utils.helpers import regex as r
+from iso8601utils.helpers.builder import time_builder
+
+
+def runner(string, regexes):
+    for regex in regexes:
+        if regex.match(string):
+            return True
+    return False
+
 
 def time(time):
     """Return a time object representing the ISO 8601 time.
@@ -7,7 +15,7 @@ def time(time):
     :return: boolean
     """
     try:
-        time_24(time)
+        time_builder(time)
         return True
     except:
         return False
@@ -18,11 +26,7 @@ def date(date):
     :param date: The ISO 8601 date.
     :return: boolean
     """
-    for r in regex.date_calendars + [regex.date_ordinal,
-        regex.date_week_0, regex.date_week_1]:
-        if r.match(date):
-            return True
-    return False
+    return runner(date, r.dates)
 
 
 def datetime(datetime):
@@ -31,8 +35,8 @@ def datetime(datetime):
     :return: boolean
     """
     try:
-        components = datetime.split('T')
-        return date(components[0]) and time(components[1])
+        [date_str, time_str] = datetime.split('T')
+        return date(date_str) and time(time_str)
     except:
         return False
 
@@ -58,16 +62,12 @@ def duration(duration):
     :param duration: The ISO 8601 duration.
     :return: boolean
     """
-    for r in [regex.duration_form_0, regex.duration_form_1,
-        regex.duration_form_2, regex.duration_week_form]:
-        if r.match(duration):
-            return True
-    return False
+    return runner(duration, r.durations)
 
 
 # Helpers
 def validate_repeat(repeat):
-    return regex.repeat.match(repeat) != None
+    return r.repeat.match(repeat) != None
 
 
 def validate_interval(start, end):

@@ -13,6 +13,13 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+install_requires=[
+    'monthdelta==1.0b',
+]
+
+if version_info < (3, 4):
+    install_requires.append('enum34')
+
 setup(
     name='iso8601utils',
 
@@ -57,7 +64,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='iso8601 rfc3339 time date datetime duration interval',
+    keywords='iso8601 time date datetime duration interval',
 
     packages=find_packages(),
 
@@ -65,12 +72,7 @@ setup(
     # your project is installed. For an analysis of "install_requires" vs pip's
     # requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=[
-        'monthdelta==1.0b',
-    ],
-
-    if version_info < (3, 4):
-        install_requires.append('enum34')
+    install_requires=install_requires,
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). You can install these using the following syntax,

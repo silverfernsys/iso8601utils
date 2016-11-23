@@ -2,23 +2,10 @@ from calendar import isleap
 from datetime import timedelta, date as date_, time as time_
 from monthdelta import MonthDelta as monthdelta
 from iso8601utils.tz import TimezoneInfo, utc
+from iso8601utils import duration as duration_
 
 
-def duration_from_match(match):
-    data = {k: float(v or 0.0) for k, v in match.groupdict().items()}
-    return (timedelta(days=data['day'],
-                     hours=data['hour'],
-                     minutes=data['minute'],
-                     seconds=data['second']),
-            monthdelta(int(data['month'] + 12 * data['year'])))
-
-
-def duration_from_week_from_match(match):
-    return (timedelta(weeks=float(match.groupdict().get('week', 0.0))),
-            monthdelta(0)) 
-
-
-def time_from_match(match):
+def time(match):
     group = match.groupdict()
     data = {k: int(v or 0) for k, v in group.items() if k != 'sign'}
     sign = group.get('sign')
@@ -45,12 +32,12 @@ def time_from_match(match):
     return (time_(hour, minute, second, 1000 * millisecond, tz), day)
 
 
-def date_from_match(match):
+def date(match):
     data = {k: int(v) for k, v in match.groupdict().items() if v}
     return date_(data.get('year', 1), data.get('month', 1), data.get('day', 1))
 
 
-def ordinal_date_from_match(match):
+def date_ordinal(match):
     data = {k: int(v) for k, v in match.groupdict().items() if v}
     days = (date_(data.get('year', 1), 1, 1) - date_(1, 1, 1)).days
     return date_.fromordinal(days + data.get('day', 0))
@@ -60,7 +47,7 @@ def days_in_year(year):
     return 366 if isleap(int(year)) else 365
 
 
-def week_date_from_match(match):
+def date_week(match):
     data = {k: int(v or 1) for k, v in match.groupdict().items()}
     year = data['year']
     week = data['week']
@@ -75,3 +62,13 @@ def week_date_from_match(match):
         year += 1
 
     return date_(year, 1, 1) + timedelta(days=(ordinal - 1))
+
+
+def duration(match):
+    data = {k: float(v or 0.0) for k, v in match.groupdict().items()}
+    return duration_(**data)
+
+
+def duration_week(match):
+    data = {k: float(v or 0.0) for k, v in match.groupdict().items()}
+    return duration_(**data)
