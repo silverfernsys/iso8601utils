@@ -2,11 +2,11 @@ import pytest
 
 
 from datetime import timedelta
-from iso8601utils.tz import TimezoneInfo
+from iso8601utils.tz import timezone
 
 
 def test_tz():
-    tz = TimezoneInfo()
+    tz = timezone()
     assert tz.offset == timedelta(hours=0, minutes=0)
     assert tz.hours == 0
     assert tz.minutes == 0
@@ -17,7 +17,7 @@ def test_tz():
     assert tz.__repr__() == '+00:00'
     assert str(tz) == '+00:00'
 
-    tz = -TimezoneInfo(hours=5, minutes=20)
+    tz = -timezone(hours=5, minutes=20)
     assert tz.hours == -5
     assert tz.minutes == -20
     assert tuple(tz) == (-5, -20)
@@ -27,7 +27,7 @@ def test_tz():
     assert tz.__repr__() == '-05:20'
     assert str(tz) == '-05:20'
 
-    tz = -TimezoneInfo(hours=4, minutes=30, name='test')
+    tz = -timezone(hours=4, minutes=30, name='test')
     assert tz.hours == -4
     assert tz.minutes == -30
     assert tuple(tz) == (-4, -30)

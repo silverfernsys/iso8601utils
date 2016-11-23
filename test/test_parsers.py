@@ -3,7 +3,7 @@ import pytest
 from monthdelta import MonthDelta as monthdelta
 from datetime import datetime as datetime_, timedelta, time as time_, date as date_
 from iso8601utils import parsers, interval, duration
-from iso8601utils.tz import TimezoneInfo, utc
+from iso8601utils.tz import timezone, utc
 
 
 def test_time():
@@ -24,36 +24,36 @@ def test_time():
 
     assert parsers.time('24:00:00') == parsers.time('00:00:00')
     assert parsers.time('12') == time_(hour=12, tzinfo=utc)
-    assert parsers.time('12+05:10') == time_(hour=12, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('12-05:10') == time_(hour=12, tzinfo=-TimezoneInfo(hours=5, minutes=10))
+    assert parsers.time('12+05:10') == time_(hour=12, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('12-05:10') == time_(hour=12, tzinfo=-timezone(hours=5, minutes=10))
     assert parsers.time('13:15') == time_(hour=13, minute=15, tzinfo=utc)
-    assert parsers.time('13:15+05:10') == time_(hour=13, minute=15, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('13:15-05:10') == time_(hour=13, minute=15, tzinfo=-TimezoneInfo(hours=5, minutes=10))
+    assert parsers.time('13:15+05:10') == time_(hour=13, minute=15, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('13:15-05:10') == time_(hour=13, minute=15, tzinfo=-timezone(hours=5, minutes=10))
     assert parsers.time('14:20:50') == time_(hour=14, minute=20, second=50, tzinfo=utc)
-    assert parsers.time('14:20:50+05:10') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('14:20:50-05:10') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('14:20:50+05') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5))
-    assert parsers.time('14:20:50-05') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5))
-    assert parsers.time('14:20:50+0510') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('14:20:50-0510') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10))
+    assert parsers.time('14:20:50+05:10') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('14:20:50-05:10') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5, minutes=10))
+    assert parsers.time('14:20:50+05') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5))
+    assert parsers.time('14:20:50-05') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5))
+    assert parsers.time('14:20:50+0510') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('14:20:50-0510') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5, minutes=10))
     assert parsers.time('12:30:40.05') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc)
     assert parsers.time('12:30:40.05Z') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc)
-    assert parsers.time('12:30:40.05+10:15') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=TimezoneInfo(hours=10, minutes=15))
-    assert parsers.time('12:30:40.05-08:45') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-TimezoneInfo(hours=8, minutes=45))
+    assert parsers.time('12:30:40.05+10:15') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=timezone(hours=10, minutes=15))
+    assert parsers.time('12:30:40.05-08:45') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-timezone(hours=8, minutes=45))
     assert parsers.time('1315') == time_(hour=13, minute=15, tzinfo=utc)
-    assert parsers.time('1315+05:10') == time_(hour=13, minute=15, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('1315-05:10') == time_(hour=13, minute=15, tzinfo=-TimezoneInfo(hours=5, minutes=10))
+    assert parsers.time('1315+05:10') == time_(hour=13, minute=15, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('1315-05:10') == time_(hour=13, minute=15, tzinfo=-timezone(hours=5, minutes=10))
     assert parsers.time('142050'), time_(hour=14, minute=20, second=50, tzinfo=utc)
-    assert parsers.time('142050+05:10') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('142050-05:10') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('142050+05') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5))
-    assert parsers.time('142050-05') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5))
-    assert parsers.time('142050+0510') == time_(hour=14, minute=20, second=50, tzinfo=TimezoneInfo(hours=5, minutes=10))
-    assert parsers.time('142050-0510') == time_(hour=14, minute=20, second=50, tzinfo=-TimezoneInfo(hours=5, minutes=10))
+    assert parsers.time('142050+05:10') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('142050-05:10') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5, minutes=10))
+    assert parsers.time('142050+05') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5))
+    assert parsers.time('142050-05') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5))
+    assert parsers.time('142050+0510') == time_(hour=14, minute=20, second=50, tzinfo=timezone(hours=5, minutes=10))
+    assert parsers.time('142050-0510') == time_(hour=14, minute=20, second=50, tzinfo=-timezone(hours=5, minutes=10))
     assert parsers.time('123040.05') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc)
     assert parsers.time('123040.05Z') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=utc)
-    assert parsers.time('123040.05+10:15') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=TimezoneInfo(hours=10, minutes=15))
-    assert parsers.time('123040.05-08:45') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-TimezoneInfo(hours=8, minutes=45))
+    assert parsers.time('123040.05+10:15') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=timezone(hours=10, minutes=15))
+    assert parsers.time('123040.05-08:45') == time_(hour=12, minute=30, second=40, microsecond=5000, tzinfo=-timezone(hours=8, minutes=45))
 
 def test_date():
     assert parsers.date('2005-01-01') == parsers.date('2004-W53-6')  
@@ -105,7 +105,7 @@ def test_datetime():
     assert parsers.datetime('2007-01-01T24:00:00') == datetime_(2007, 1, 2, 0, 0, 0, tzinfo=utc)
     assert parsers.datetime('2007-01-01T24:00:00') == parsers.datetime('2007-01-02T00:00:00')
     assert parsers.datetime('2007-08-09T12:30-02:00') == datetime_(2007, 8, 9, 12, 30,
-        tzinfo=-TimezoneInfo(hours=2, minutes=0))
+        tzinfo=-timezone(hours=2, minutes=0))
 
     with pytest.raises(ValueError):
         parsers.datetime('invalid')
@@ -158,7 +158,7 @@ def test_interval():
     # assert interval('2007-11-13T09:00/15T17:00') == interval_(repeats=0, start=datetime(2007, 11, 13, 9),
     #     end=datetime(2007, 11, 15, 17))
     # assert interval('2005-03-20T5:15+03:00/23T17:00') == interval_(repeats=0, start=datetime(2005, 3, 20, 5, 15,
-    #     tzinfo=TimezoneInfo(hours=3, minutes=0)), end=datetime(2005, 3, 23, 17, tzinfo=TimezoneInfo(hours=3, minutes=0)))
+    #     tzinfo=timezone(hours=3, minutes=0)), end=datetime(2005, 3, 23, 17, tzinfo=timezone(hours=3, minutes=0)))
 
     assert parsers.interval('P7Y', now=now) == interval(end=now, duration=duration(years=7))
     assert parsers.interval('P6W', now=now) == interval(end=now, duration=duration(weeks=6))
@@ -171,14 +171,14 @@ def test_interval():
     assert parsers.interval('R2/P5DT7H/1999-12-31T16:00:00.000Z') == interval(end=datetime_(year=1999, month=12, day=31,
         hour=16, tzinfo=utc), duration=duration(days=5, hours=7), repeats=2)
     assert parsers.interval('R5/2002-08-15T16:20:05.100+08:10/P5DT7H') == interval(start=datetime_(year=2002, month=8,
-        day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=TimezoneInfo(hours=8, minutes=10)),
+        day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=timezone(hours=8, minutes=10)),
         duration=duration(days=5, hours=7), repeats=5)
     assert parsers.interval('2002-08-15T16:20:05.100+08:10/2002-10-12T17:05:25.020-01:40') == interval(start=datetime_(year=2002, 
-        month=8, day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=TimezoneInfo(hours=8, minutes=10)),
+        month=8, day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=timezone(hours=8, minutes=10)),
         end=datetime_(year=2002, month=10, day=12, hour=17, minute=5, second=25, microsecond=20000,
-            tzinfo=-TimezoneInfo(hours=1, minutes=40)))
+            tzinfo=-timezone(hours=1, minutes=40)))
     assert parsers.interval('R/P5DT7H/2002-08-15T16:20:05.100+08:10') == interval(end=datetime_(year=2002, month=8,
-        day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=TimezoneInfo(hours=8, minutes=10)),
+        day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=timezone(hours=8, minutes=10)),
         duration=duration(days=5, hours=7), repeats=float('inf'))
 
 def test_duration():

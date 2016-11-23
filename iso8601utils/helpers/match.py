@@ -1,7 +1,7 @@
 from calendar import isleap
 from datetime import timedelta, date as date_, time as time_
 from monthdelta import MonthDelta as monthdelta
-from iso8601utils.tz import TimezoneInfo, utc
+from iso8601utils.tz import timezone, utc
 from iso8601utils import duration as duration_
 
 
@@ -16,9 +16,9 @@ def time(match):
             raise ValueError('Invalid timezone offset {0}00:00.'.format(sign))
 
         if sign == '+':
-            tz = TimezoneInfo(hours=hours, minutes=minutes)
+            tz = timezone(hours=hours, minutes=minutes)
         else:
-            tz = -TimezoneInfo(hours=hours, minutes=minutes)
+            tz = -timezone(hours=hours, minutes=minutes)
     else:
         tz = utc
 

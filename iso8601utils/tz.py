@@ -3,7 +3,7 @@ from copy import deepcopy
 from datetime import timedelta, tzinfo
 
 
-class TimezoneInfo(tzinfo, Iterable):
+class timezone(tzinfo, Iterable):
     def __init__(self, hours=0, minutes=0, name=None):
         self.offset = timedelta(hours=hours, minutes=minutes)
         self.name = name or self.string()
@@ -11,7 +11,7 @@ class TimezoneInfo(tzinfo, Iterable):
     def __neg__(self):
         (hours, minutes) = tuple(self)
         name = self.name if self.name != self.string() else None
-        return TimezoneInfo(-hours, -minutes, name)
+        return timezone(-hours, -minutes, name)
 
     @property
     def hours(self):
@@ -52,4 +52,4 @@ class TimezoneInfo(tzinfo, Iterable):
         return self.name
 
 
-utc = TimezoneInfo(hours=0, minutes=0, name='Z')
+utc = timezone(hours=0, minutes=0, name='Z')
