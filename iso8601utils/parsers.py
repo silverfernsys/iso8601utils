@@ -1,7 +1,7 @@
-from datetime import datetime as datetime_
+from datetime import datetime as datetime_, timedelta
 from iso8601utils import interval as interval_
 from iso8601utils.helpers.builder import (duration_builder, time_builder, date_builder,
-    datetime_builder, repeat_builder)
+    datetime_builder, datetime_builder_partial, repeat_builder)
 
 
 def time(time):
@@ -73,14 +73,17 @@ def interval(interval, now=datetime_.now(), designator='/'):
         except:
             raise ValueError(error_msg)
         try:
-            kwargs['start'] = datetime(components[1])
+            kwargs['start'] = datetime_builder_partial(components[1], strict=True)
         except:
             try:
                 kwargs['duration'] = duration(components[1])
             except:
                 raise ValueError(error_msg)
         try:
-            kwargs['end'] = datetime(components[2])
+            if 'start' in kwargs:
+                kwargs['end'] = datetime_builder_partial(components[2], timedelta(1), kwargs['start'])
+            else:
+                kwargs['end'] = datetime(components[2])
         except:
             try:
                 kwargs['duration'] = duration(components[2])
@@ -93,9 +96,9 @@ def interval(interval, now=datetime_.now(), designator='/'):
             kwargs['end'] = now
         except:
             try:
-                kwargs['start'] = datetime(components[0])
+                kwargs['start'] = datetime_builder_partial(components[0], strict=True)
                 try:
-                    kwargs['end'] = datetime(components[1])
+                    kwargs['end'] = datetime_builder_partial(components[1], timedelta(1), kwargs['start'])
                 except:
                     try:
                         kwargs['duration'] = duration(components[1])

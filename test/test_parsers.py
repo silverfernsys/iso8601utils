@@ -154,12 +154,6 @@ def test_interval():
     with pytest.raises(ValueError):
         parsers.interval('23P7DT5H/89R3')
 
-    # assert interval('2007-11-13/15') == interval_(repeats=0, start=datetime(2007, 11, 13), end=datetime(2007, 11, 16))
-    # assert interval('2007-11-13T09:00/15T17:00') == interval_(repeats=0, start=datetime(2007, 11, 13, 9),
-    #     end=datetime(2007, 11, 15, 17))
-    # assert interval('2005-03-20T5:15+03:00/23T17:00') == interval_(repeats=0, start=datetime(2005, 3, 20, 5, 15,
-    #     tzinfo=timezone(hours=3, minutes=0)), end=datetime(2005, 3, 23, 17, tzinfo=timezone(hours=3, minutes=0)))
-
     assert parsers.interval('P7Y', now=now) == interval(end=now, duration=duration(years=7))
     assert parsers.interval('P6W', now=now) == interval(end=now, duration=duration(weeks=6))
     assert parsers.interval('R1/P6Y5M', now=now) == interval(end=now, repeats=1, duration=duration(years=6, months=5))
@@ -180,6 +174,14 @@ def test_interval():
     assert parsers.interval('R/P5DT7H/2002-08-15T16:20:05.100+08:10') == interval(end=datetime_(year=2002, month=8,
         day=15, hour=16, minute=20, second=5, microsecond=100000, tzinfo=timezone(hours=8, minutes=10)),
         duration=duration(days=5, hours=7), repeats=float('inf'))
+
+def test_partial_intervals():
+    assert parsers.interval('2005-03-20T05:15+03:00/23T17:00') == interval(repeats=0, start=datetime_(2005, 3, 20, 5, 15,
+        tzinfo=timezone(hours=3, minutes=0)), end=datetime_(2005, 3, 23, 17, tzinfo=timezone(hours=3, minutes=0)))
+    assert parsers.interval('2007-11-13/15') == interval(repeats=0, start=datetime_(2007, 11, 13, tzinfo=utc),
+        end=datetime_(2007, 11, 16, tzinfo=utc))
+    assert parsers.interval('2007-11-13T09:00/15T17:00') == interval(repeats=0, start=datetime_(2007, 11, 13, 9, tzinfo=utc),
+        end=datetime_(2007, 11, 15, 17, tzinfo=utc))
 
 def test_duration():
     assert parsers.duration('P3Y6M4DT12H30M5S') == duration(timedelta=timedelta(days=4, hours=12,

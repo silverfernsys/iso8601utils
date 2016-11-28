@@ -41,6 +41,36 @@ def datetime(datetime):
         return False
 
 
+def _datetime_strict(datetime):
+    try:
+        components = datetime.split('T')
+        length = len(components)
+        if length == 2:
+            [date_str, time_str] = components
+            return runner(date_str, r.dates_strict) and time(time_str)
+        elif length == 1:
+            return runner(components[0], r.dates_strict) or time(components[0])
+        else:
+            return False
+    except:
+        return False
+
+
+def _datetime_partial(datetime):
+    try:
+        components = datetime.split('T')
+        length = len(components)
+        if length == 2:
+            [date_str, time_str] = components
+            return runner(date_str, r.dates_partial) and time(time_str)
+        elif length == 1:
+            return runner(components[0], r.dates_partial) or time(components[0])
+        else:
+            return False
+    except:
+        return False
+
+
 def interval(interval, designator='/'):
     """Return a pair of datetimes representing start and end datetimes.
     :param interval: The ISO 8601 interval.
@@ -73,7 +103,8 @@ def validate_repeat(repeat):
 def validate_interval(start, end):
     if ((datetime(start) and datetime(end)) or 
         (datetime(start) and duration(end)) or
-        (duration(start) and datetime(end))):
+        (duration(start) and datetime(end)) or
+        (_datetime_strict(start) and _datetime_partial(end))):
         return True
     else:
         return False

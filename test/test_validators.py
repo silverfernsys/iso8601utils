@@ -23,6 +23,9 @@ def test_interval():
     assert interval('asdf/87rf') == False
     assert interval('23P7DT5H/89R3') == False
     assert interval('T5/2016-08-01T23:10:59.111Z/2016-08-08T00:13:23.001Z') == False
+    assert interval('2005-03-20T05:15+03:00/23T17:00') == True
+    assert interval('2007-11-13/15') == True
+    assert interval('2007-11-13T09:00/15T17:00') == True
 
 
 def test_duration():
