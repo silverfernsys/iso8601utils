@@ -18,10 +18,6 @@ def test_validators():
     assert _datetime_strict('2007-11-13T09:00') == True
     assert _datetime_partial('15T17:00') == True
 
-    # assert interval('2005-03-20T05:15+03:00/23T17:00') == True
-    # assert interval('2007-11-13/15') == True
-    # assert interval('2007-11-13T09:00/15T17:00') == True
-
 def test_partial():
     s = datetime(2007, 11, 13, 0, 0, tzinfo=utc)
     a = date_builder_partial('15', s)
